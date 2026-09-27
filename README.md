@@ -1,35 +1,40 @@
-<div align="center">
-
 # aiplanrank
 *Look before you sub — ¥10 = how many tokens.*
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square&labelColor=black)](LICENSE)
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-3fb950?style=flat-square&labelColor=black)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Finn763/aiplanrank?style=flat-square&logo=github&labelColor=black)](https://github.com/Finn763/aiplanrank/stargazers)
 [中文](README.zh-CN.md) | English
-</div>
 
-> One table: theoretical tokens per ¥10 for every AI coding plan. Metered plans exact, request-based plans with open formula.
-
+> Every plan quotes a different unit. aiplanrank converts them to one: theoretical tokens per ¥10.
+Requests, prompts, credits, AFP — vendors never speak the same unit, and request-based plans never print token counts at all. aiplanrank normalizes every AI coding subscription to a single comparable number, each with its formula and source beside it.
+---
+## Why aiplanrank exists
+Built to fix three failure modes every subscription buyer has met:
+- **#1: Units don't compare.** 18,000 requests vs $60 credits vs 100,000 AFP — no common denominator. **Fix:** one number per plan (tokens per ¥10), formula shown.
+- **#2: Request plans hide tokens.** Coding Plans print requests, not tokens; real yield depends on model, multiplier, peak hours. **Fix:** open estimated conversion (`*` = estimated), assumption in the open, never a hidden number.
+- **#3: Static tables rot.** Prices and multipliers change every few weeks. **Fix:** data lives in one `plans.json`; a PR with a source link updates the whole rank.
+> Seed snapshot: OpenCode Go ~8.3亿*/¥10 (dollar-metered) vs GLM Lite ~2449万*/¥10 vs 火山 Lite ~2081万*/¥10 — same money, 30x gap. Formulas in `plans.json`, independent re-checks welcome.
+---
 ## How it runs
-1. `plans.json` holds price + quota + formula.
-2. `index.html` sorts by ¥10 tokens. No build.
-3. Open `index.html` or enable Pages.
-
+Three files, no build, zero backend.
+1. **Data** — `plans.json` holds price + quota + formula + source per plan.
+2. **Rank** — `index.html` fetches it, sorts by ¥10 tokens, renders one table.
+3. **View** — open `index.html` locally or serve the folder; enable Pages for the public URL.
+---
 ## What's inside
-| file | fact |
+| Area | What's pinned down |
 |---|---|
-| `plans.json` | 3 seed plans, each with formula + source |
-| `index.html` | static rank, fetch + sort only |
-
-<details><summary>Structure</summary>
-
+| Unit | Tokens per ¥10, per plan. Metered plans exact, request-based plans `*` estimated |
+| Formula | Every row carries its conversion assumption — no black-box numbers |
+| Source | Every row links its vendor page; PRs without a source link don't merge |
+| Scope | AI coding subscriptions first (Coding / Token / Membership); IDE plans later |
+---
+**Repo layout**
 ```
-plans.json
-index.html
+plans.json   # price + quota + formula + source (the whole dataset)
+index.html   # fetch + sort + render, no build step
 ```
-</details>
-
 ## Contributing
-PRs with `source` link + formula. `*` = estimated.
-
+PRs welcome: one row = price + quota + formula + source link. `*` marks anything estimated. Stale rows get fixed, not debated.
 ## License
-MIT.
+[MIT](LICENSE)
+*Sub after you see the number.*

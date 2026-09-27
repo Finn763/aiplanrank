@@ -1,27 +1,40 @@
-<div align="center">
-
 # aiplanrank
 *先看再订 — ¥10 = 多少 Token。*
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square&labelColor=black)](LICENSE)
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-3fb950?style=flat-square&labelColor=black)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Finn763/aiplanrank?style=flat-square&logo=github&labelColor=black)](https://github.com/Finn763/aiplanrank/stargazers)
 [中文](README.zh-CN.md) | English
-</div>
 
-> 一张表：所有AI订阅按¥10理论Token排行。按量计费精确，按次计费亮公式估算。
-
-## 运行
-1. `plans.json` 存价格+额度+公式。
-2. `index.html` 按¥10 Token排序，无构建。
-3. 直接打开`index.html`或开Pages。
-
-## 收录
-| 文件 | 说明 |
+> 每家套餐用不同单位报价，aiplanrank只留一个数：¥10理论Token。
+请求数、prompt、credits、AFP——厂商从不说同一种话，按次计费的更不印Token数。aiplanrank把所有AI编程订阅折成一个可比数字，每个数旁边都带公式和来源。
+---
+## 为什么做aiplanrank
+解决买订阅时必踩的三个坑：
+- **#1：单位不可比。** 18000次 vs $60 credits vs 100000 AFP，没法直接比。**解：** 每家只比¥10 Token，公式公开。
+- **#2：按次套餐藏Token。** Coding Plan只印次数不印Token，实际量看模型、倍率、高峰系数。**解：** 估算值打`*`，假设写在明处。
+- **#3：静态表放半个月就烂。** 价格倍率几周一变。**解：** 数据全在`plans.json`，一个带来源链接的PR即更新全榜。
+> 种子快照：OpenCode Go约8.3亿*/¥10（按量折算）vs GLM Lite约2449万*/¥10 vs 火山Lite约2081万*/¥10——同样的钱差30倍。公式见`plans.json`，欢迎独立复算。
+---
+## 怎么跑
+三文件，无构建，无后端。
+1. **数据** — `plans.json` 存价格+额度+公式+来源。
+2. **排行** — `index.html` 拉取后按¥10 Token排序渲染。
+3. **看** — 本地直接打开`index.html`，公开访问开Pages。
+---
+## 收录规则
+| 维度 | 规则 |
 |---|---|
-| `plans.json` | 3个种子套餐，带公式+来源 |
-| `index.html` | 静态排行，仅fetch+排序 |
-
+| 单位 | 每家只比¥10 Token；按量精确，按次`*`估算 |
+| 公式 | 每行自带折算假设，不收黑盒数字 |
+| 来源 | 每行链官方页；无来源链接的PR不合 |
+| 范围 | 先做AI编程订阅（Coding/Token/Membership），IDE套餐后加 |
+---
+**仓库结构**
+```
+plans.json   # 价格+额度+公式+来源（全部数据）
+index.html   # 拉取+排序+渲染，无构建
+```
 ## 贡献
-PR必须带`source`链接+公式，`*`=估算。
-
+欢迎PR：一行=价格+额度+公式+来源链接，估算打`*`。过期数据直接修。
 ## License
-MIT.
+[MIT](LICENSE)
+*看到数字再下单。*
