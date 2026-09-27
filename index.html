@@ -15,25 +15,24 @@ tr:nth-child(even) td{background:#fafafa}
 .badge{display:inline-block;font-size:12px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
 .src{font-size:12px}
 footer{margin:24px 0;color:#666;font-size:13px}
-.err{color:#a00}
 </style>
 </head>
 <body>
 <h1>aiplanrank <small>$10 = 多少 Token*</small></h1>
 <p>AI编程订阅理论量排行：统一折成每$10美元的tokens。<span class="badge">*估算</span> = 按次/按prompt口径经公开假设折算，非官方承诺。¥标价按7.2折$。</p>
 <table id="t"><tr><th>#</th><th>套餐</th><th>价格</th><th>月额度</th><th>$10 Token</th><th>公式</th><th>来源</th></tr></table>
-<p id="e" class="err"></p>
-<footer>数据更新：2026-09-27 · 公式与来源见 <a href="plans.json">plans.json</a> · 欢迎带来源链接PR修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
+<footer>数据更新：2026-09-27 · 机器可读数据见 <a href="plans.json">plans.json</a>（与本页内联数据一致，见test_data.py） · 欢迎带来源链接PR修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
 <script>
+// ponytail: data inlined so the page works on file:// with zero backend;
+// keep in sync with plans.json (test_data.py fails otherwise).
+const PLANS = [{"estimated":true,"formula":"月72亿÷$16.5(¥119按7.2)×10","id":"minimax-max","name":"MiniMax Max","per10":4356302521,"price":"¥119/月","quota":"月约72亿tokens*","source":"https://platform.minimaxi.com/"},{"estimated":true,"formula":"月24亿÷$6.8(¥49按7.2)×10","id":"minimax-plus","name":"MiniMax Plus","per10":3526530612,"price":"¥49/月","quota":"月约24亿tokens*","source":"https://platform.minimaxi.com/"},{"estimated":true,"formula":"月14.28亿÷$27.6(¥199按7.2)×10","id":"kimi-allegretto","name":"Kimi Allegretto","per10":516663317,"price":"¥199/月","quota":"月约14.28亿tokens*","source":"https://www.kimi.com/membership/pricing"},{"estimated":true,"formula":"月6亿÷$20.7(¥149按7.2)×10","id":"glm-pro","name":"智谱 GLM Coding Pro","per10":289932883,"price":"¥149/月","quota":"月约6亿tokens*","source":"https://www.bigmodel.cn/glm-coding"},{"estimated":true,"formula":"月4.8亿÷$20×10","id":"chatgpt-plus","name":"ChatGPT Plus / Codex","per10":240000000,"price":"$20/月","quota":"月约4.8亿tokens*","source":"https://chatgpt.com/pricing"},{"estimated":true,"formula":"月2.9亿÷$13.75(¥99按7.2)×10","id":"mimo-standard","name":"小米 MiMo Standard","per10":210909089,"price":"¥99/月","quota":"月约2.9亿tokens*","source":"https://platform.xiaomimimo.com/"},{"estimated":true,"formula":"月4.16亿÷$20×10","id":"claude-pro","name":"Claude Pro","per10":208000001,"price":"$20/月","quota":"月约4.16亿tokens*","source":"https://claude.ai/upgrade"},{"estimated":true,"formula":"月1.2亿÷$6.8(¥49按7.2)×10","id":"glm-lite","name":"智谱 GLM Coding Lite","per10":176326531,"price":"¥49/月","quota":"月约1.2亿tokens*","source":"https://www.bigmodel.cn/glm-coding"},{"estimated":true,"formula":"月8325万÷$5.6(¥40按7.2)×10","id":"volc-lite","name":"火山方舟 Coding Lite","per10":149850000,"price":"¥40/月","quota":"18000次/月(1200/5h)","source":"https://www.volcengine.com/"},{"estimated":true,"formula":"月4.1625亿÷$27.8(¥200按7.2)×10","id":"volc-pro","name":"火山方舟 Coding Pro","per10":149850000,"price":"¥200/月","quota":"90000次/月(6000/5h)","source":"https://www.volcengine.com/"},{"estimated":true,"formula":"月3.75亿÷$27.5(¥198按7.2)×10","id":"alibaba-standard","name":"阿里百炼 标准版","per10":136363636,"price":"¥198/月","quota":"月约3.75亿tokens*","source":"https://bailian.aliyun.com/"},{"estimated":true,"formula":"$60 credits÷混合单价$0.57/1M","id":"opencode-go","name":"OpenCode Go","per10":105263158,"price":"$10/月","quota":"$60 credits按token单价扣","source":"https://opencode.ai/go"}];
 function fmt(n){if(n>=1e8)return (n/1e8).toFixed(2)+'亿';if(n>=1e4)return Math.round(n/1e4)+'万';return ''+n;}
-fetch('plans.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
-d.sort(function(a,b){return b.per10-a.per10;});
+PLANS.sort(function(a,b){return b.per10-a.per10;});
 var t=document.getElementById('t'),medal=['🥇','🥈','🥉'];
-d.forEach(function(p,i){
+PLANS.forEach(function(p,i){
 var tr=document.createElement('tr');
 tr.innerHTML='<td>'+(medal[i]||(i+1))+'</td><td>'+p.name+'</td><td>'+p.price+'</td><td><small>'+p.quota+'</small></td><td class="num">'+fmt(p.per10)+(p.estimated?'*':'')+'</td><td><small>'+p.formula+'</small></td><td class="src"><a href="'+p.source+'">官方</a></td>';
 t.appendChild(tr);});
-}).catch(function(){document.getElementById('e').textContent='plans.json 加载失败（file:// 协议下请用 python -m http.server 预览，或开 GitHub Pages）。';});
 </script>
 </body>
 </html>
