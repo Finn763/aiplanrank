@@ -1,29 +1,29 @@
 # aiplanrank
-*先看再订 — ¥10 = 多少 Token。*
+*先看再订 — $10 = 多少 Token。*
 [![License: MIT](https://img.shields.io/badge/License-MIT-3fb950?style=flat-square&labelColor=black)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Finn763/aiplanrank?style=flat-square&logo=github&labelColor=black)](https://github.com/Finn763/aiplanrank/stargazers)
 [中文](README.zh-CN.md) | English
 
-> 每家套餐用不同单位报价，aiplanrank只留一个数：¥10理论Token。
-请求数、prompt、credits、AFP——厂商从不说同一种话，按次计费的更不印Token数。aiplanrank把所有AI编程订阅折成一个可比数字，每个数旁边都带公式和来源。
+> 每家套餐用不同单位报价，aiplanrank只留一个数：$10理论Token。
+请求数、prompt、credits、AFP——厂商从不说同一种话，按次计费的更不印Token数。aiplanrank把所有AI编程订阅折成一个可比数字（每$10美元的tokens），每个数旁边都带公式和来源。
 ---
 ## 为什么做aiplanrank
 解决买订阅时必踩的三个坑：
-- **#1：单位不可比。** 18000次 vs $60 credits vs 100000 AFP，没法直接比。**解：** 每家只比¥10 Token，公式公开。
+- **#1：单位不可比。** 18000次 vs $60 credits vs 100000 AFP，没法直接比。**解：** 每家只比$10 Token，公式公开。
 - **#2：按次套餐藏Token。** Coding Plan只印次数不印Token，实际量看模型、倍率、高峰系数。**解：** 估算值打`*`，假设写在明处。
 - **#3：静态表放半个月就烂。** 价格倍率几周一变。**解：** 数据全在`plans.json`，一个带来源链接的PR即更新全榜。
-> 种子快照：OpenCode Go约8.3亿*/¥10（按量折算）vs GLM Lite约2449万*/¥10 vs 火山Lite约2081万*/¥10——同样的钱差30倍。公式见`plans.json`，欢迎独立复算。
+> 种子快照：MiniMax Max约43.6亿*/$10（请求折算）vs GLM Lite约1.76亿* vs 火山Lite约1.5亿*——同样的钱差29倍。公式见`plans.json`，欢迎独立复算。
 ---
 ## 怎么跑
 三文件，无构建，无后端。
 1. **数据** — `plans.json` 存价格+额度+公式+来源。
-2. **排行** — `index.html` 拉取后按¥10 Token排序渲染。
+2. **排行** — `index.html` 拉取后按$10 Token排序渲染。
 3. **看** — 本地直接打开`index.html`，公开访问开Pages。
 ---
 ## 收录规则
 | 维度 | 规则 |
 |---|---|
-| 单位 | 每家只比¥10 Token；按量精确，按次`*`估算 |
+| 单位 | 每家只比$10 Token；按量精确，按次`*`估算 |
 | 公式 | 每行自带折算假设，不收黑盒数字 |
 | 来源 | 每行链官方页；无来源链接的PR不合 |
 | 范围 | 先做AI编程订阅（Coding/Token/Membership），IDE套餐后加 |
