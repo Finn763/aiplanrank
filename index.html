@@ -1,1 +1,39 @@
-<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>aiplanrank — ¥10 = 多少 Token</title><style>body{font-family:system-ui;max-width:800px;margin:24px auto;padding:0 16px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}</style><h1>aiplanrank <small>¥10 = 多少 Token*</small></h1><p>*估算值，公式见表。Token口径精确，请求口径按假设折算。</p><table id="t"><tr><th>套餐</th><th>价格</th><th>¥10理论Token</th><th>公式</th></tr></table><script>fetch('plans.json').then(r=>r.json()).then(d=>{const t=document.getElementById('t');d.sort((a,b)=>parseFloat(b.theoretical_tokens_per_10cny.replace(/[^0-9.]/g,''))-parseFloat(a.theoretical_tokens_per_10cny.replace(/[^0-9.]/g,'')));for(const p of d){const tr=document.createElement('tr');tr.innerHTML=`<td>${p.name}<br><small>${p.quota||p.credits}</small></td><td>${p.price}</td><td><b>${p.theoretical_tokens_per_10cny}</b></td><td><small>${p.formula}</small></td>`;t.appendChild(tr);}});</script>
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>aiplanrank — ¥10 = 多少 Token</title>
+<style>
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:960px;margin:24px auto;padding:0 16px;color:#222}
+h1 small{color:#666;font-weight:normal}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}
+th{background:#f5f5f5;white-space:nowrap}
+tr:nth-child(even) td{background:#fafafa}
+.num{font-weight:bold;white-space:nowrap}
+.badge{display:inline-block;font-size:12px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
+.src{font-size:12px}
+footer{margin:24px 0;color:#666;font-size:13px}
+.err{color:#a00}
+</style>
+</head>
+<body>
+<h1>aiplanrank <small>¥10 = 多少 Token*</small></h1>
+<p>AI编程订阅理论量排行：统一折成每¥10人民币的tokens。<span class="badge">*估算</span> = 按次/按prompt口径经公开假设折算，非官方承诺。$按7.2折¥。</p>
+<table id="t"><tr><th>#</th><th>套餐</th><th>价格</th><th>月额度</th><th>¥10 Token</th><th>公式</th><th>来源</th></tr></table>
+<p id="e" class="err"></p>
+<footer>数据更新：2026-09-27 · 公式与来源见 <a href="plans.json">plans.json</a> · 欢迎带来源链接PR修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
+<script>
+function fmt(n){if(n>=1e8)return (n/1e8).toFixed(2)+'亿';if(n>=1e4)return Math.round(n/1e4)+'万';return ''+n;}
+fetch('plans.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
+d.sort(function(a,b){return b.per10-a.per10;});
+var t=document.getElementById('t'),medal=['🥇','🥈','🥉'];
+d.forEach(function(p,i){
+var tr=document.createElement('tr');
+tr.innerHTML='<td>'+(medal[i]||(i+1))+'</td><td>'+p.name+'</td><td>'+p.price+'</td><td><small>'+p.quota+'</small></td><td class="num">'+fmt(p.per10)+(p.estimated?'*':'')+'</td><td><small>'+p.formula+'</small></td><td class="src"><a href="'+p.source+'">官方</a></td>';
+t.appendChild(tr);});
+}).catch(function(){document.getElementById('e').textContent='plans.json 加载失败（file:// 协议下请用 python -m http.server 预览，或开 GitHub Pages）。';});
+</script>
+</body>
+</html>
