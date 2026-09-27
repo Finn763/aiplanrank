@@ -12,18 +12,19 @@ Built to fix three failure modes every subscription buyer has met:
 - **#1: Units don't compare.** 18,000 requests vs $60 credits vs 100,000 AFP — no common denominator. **Fix:** one number per plan (flash-equiv tokens per $10, flagship-model priced), formula shown.
 - **#2: Request plans hide tokens.** Coding Plans print requests, not tokens; real yield depends on model, multiplier, peak hours. **Fix:** open estimated conversion (`*` = estimated), assumption in the open, never a hidden number.
 - **#3: Static tables rot.** Prices and multipliers change every few weeks. **Fix:** data lives in one `plans.json`; a PR with a source link updates the whole rank.
-> Seed snapshot: 火山 Lite/Pro ~1.5亿*/$10 (shared requests) vs OpenCode Go 谷1.23亿 exact (official $ table) — 阿里 Standard pending (credits rate unknown). Formulas in `plans.json`, independent re-checks welcome.
+> Seed snapshot (per $10, off-peak): 火山 Lite/Pro ~1.5亿* (shared requests) > 腾讯云 TokenHub Pro ~5,737万* (official credits) > OpenCode Go 3,077万 exact (official $15 cap; 1.23亿 during promo) — 阿里百炼 & Atlas Cloud stay 待查 rather than guessed. Formulas in `plans.json`, independent re-checks welcome.
 ---
 ## How it runs
 Three files, no build, zero backend.
 1. **Data** — `plans.json` holds price + quota + formula + source per plan.
-2. **Rank** — `index.html` fetches it, sorts by flash-equiv tokens, renders one table.
+2. **Rank** — `index.html` carries the data inline (so it opens from `file://`), sorts by flash-equiv tokens, renders one table.
 3. **View** — open `index.html` locally or serve the folder; enable Pages for the public URL.
 ---
 ## What's inside
 | Area | What's pinned down |
 |---|---|
-| Unit | Flash-equiv tokens per $10 (anchor deepseek-v4.1-flash @ $0.2262/1M blended 1:3) |
+| Unit | Flash-equiv tokens per $10 (anchor model deepseek-v4.1-flash, input:output 1:3, no cache assumed) |
+| Ranked vs held | A plan ranks only with a published price + quota; unpublished credit coefficients stay 待查, never guessed |
 | Formula | Every row carries its conversion assumption — no black-box numbers |
 | Source | Every row links its vendor page; PRs without a source link don't merge |
 | Scope | Only plans officially shipping deepseek-v4.1-flash (single-vendor plans excluded) |
@@ -31,7 +32,7 @@ Three files, no build, zero backend.
 **Repo layout**
 ```
 plans.json   # price + quota + formula + source (the whole dataset)
-index.html   # fetch + sort + render, no build step
+index.html   # sort + render, data inlined (no build step)
 ```
 ## Contributing
 PRs welcome: one row = price + quota + formula + source link. `*` marks anything estimated. Stale rows get fixed, not debated.

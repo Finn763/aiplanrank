@@ -3,36 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>aiplanrank — $10 = 多少 flash token</title>
+<title>aiplanrank — $10 能烧多少 deepseek-flash</title>
 <style>
-body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1020px;margin:24px auto;padding:0 16px;color:#222}
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1080px;margin:24px auto;padding:0 16px;color:#222}
 h1 small{color:#666;font-weight:normal}
-table{border-collapse:collapse;width:100%;font-size:15px}
-td,th{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+td,th{border:1px solid #ddd;padding:7px;text-align:left;vertical-align:top}
 th{background:#f5f5f5;white-space:nowrap}
 tr:nth-child(even) td{background:#fafafa}
 .num{font-weight:bold;white-space:nowrap}
-.badge{display:inline-block;font-size:12px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
-.ok{display:inline-block;font-size:12px;padding:1px 6px;border-radius:8px;background:#d4edda;border:1px solid #2d7a3f;color:#1d5c2a}
+.wait{color:#999}
+.badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
+.ok{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;background:#d4edda;border:1px solid #2d7a3f;color:#1d5c2a}
 .src{font-size:12px}
+.note{font-size:11px;color:#666}
 footer{margin:24px 0;color:#666;font-size:13px}
+h2{font-size:17px;margin-top:28px}
 </style>
 </head>
 <body>
-<h1>aiplanrank <small>$10 = 多少 flash token*</small></h1>
-<p>只收录官方明确含 <a href="https://openrouter.ai/deepseek/deepseek-v4.1-flash">deepseek-v4.1-flash</a> 的套餐（MiniMax/Kimi/GLM/MiMo/Claude/GPT单厂套餐已剔除）。统一折成每$10的flash tokens。<span class="badge">*估算</span> <span class="ok">精确</span>=官方单价直算。¥标价按7.2折$。</p>
-<table id="t"><tr><th>#</th><th>套餐</th><th>价格</th><th>V4.1 Flash额度</th><th>$10 flash</th><th>公式</th><th>来源</th></tr></table>
-<footer>数据更新：2026-09-27 · 机器可读数据见 <a href="plans.json">plans.json</a>（与本页内联数据一致，见test_data.py） · 欢迎带来源链接PR修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
+<h1>aiplanrank <small>$10 能烧多少 deepseek-flash</small></h1>
+<p>锚定模型 <a href="https://openrouter.ai/deepseek/deepseek-v4.1-flash">DeepSeek-V4.1-Flash</a>（<code>deepseek-flash</code>）：把每家第三方套餐的额度折成「同样的钱能跑多少 flash tokens」，输入:输出按 1:3、不计缓存命中。<b>谷</b>=空闲时段（官方价半价），<b>峰</b>=高峰时段。¥ 按 7.2 折 $。<span class="badge">*估算</span><span class="ok">官方直算</span></p>
+<table id="t"><tr><th>#</th><th>套餐</th><th>厂商</th><th>价格</th><th>额度</th><th>$10 flash(谷)</th><th>(峰)</th><th>公式</th><th>来源</th></tr></table>
+
+<h2>候选池（尚未核实到官方额度/系数，不进榜）</h2>
+<table>
+<tr><th>厂商</th><th>状态</th></tr>
+<tr><td>联通云 Coding Plan</td><td class="note">第三方汇总称含 DeepSeek-V4-Flash、Lite ¥40；官方额度页未核实</td></tr>
+<tr><td>京东云 Coding Plan</td><td class="note">模型池仅到 DeepSeek-V3.2（非 flash），本榜不计</td></tr>
+<tr><td>百度千帆 Token Plan</td><td class="note">Coding Plan 已停售并入 Token Plan，额度口径未见 flash 系数</td></tr>
+<tr><td>优云智算 / 商汤 / 移动云 / 天翼云 / 九章</td><td class="note">含 flash 与否、额度口径均未核实</td></tr>
+<tr><td>Atlas Cloud 加油包</td><td class="note">倍率公开（flash 0.73入/2.18出），套餐价需登录</td></tr>
+</table>
+
+<footer>数据更新：2026-09-27 · 机器可读数据 <a href="plans.json">plans.json</a>（与页内内联数据一致，见 test_data.py） · 欢迎带官方来源的 PR 修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
 <script>
-// ponytail: data inlined so the page works on file:// with zero backend;
-// keep in sync with plans.json (test_data.py fails otherwise).
-const PLANS = [{"estimated":false,"flagship":"deepseek/deepseek-v4.1-flash","formula":"$60÷谷$0.4875/1M(峰$0.975减半)，官方单价表","id":"opencode-go","name":"OpenCode Go","per10":123076923,"price":"$10/月","quota":"V4.1 Flash峰6154万/谷1.23亿/月(官方)","source":"https://opencode.ai/docs/zh-cn/go/"},{"estimated":true,"flagship":"deepseek/deepseek-v4.1-flash","formula":"18000次×4625tokens/次÷$5.6(¥40按7.2)×10","id":"volc-lite","name":"火山方舟 Coding Lite","per10":149850000,"price":"¥40/月","quota":"18000次/月(1200/5h)，多模型共享","source":"https://ai.volcengine.com/activity/codingplan"},{"estimated":true,"flagship":"deepseek/deepseek-v4.1-flash","formula":"90000次×4625tokens/次÷$27.8(¥200按7.2)×10","id":"volc-pro","name":"火山方舟 Coding Pro","per10":149850000,"price":"¥200/月","quota":"90000次/月(6000/5h)，多模型共享","source":"https://ai.volcengine.com/activity/codingplan"},{"estimated":true,"flagship":"deepseek/deepseek-v4.1-flash","formula":"45,000 Credits/月，flash抵扣系数以控制台为准","id":"alibaba-standard","name":"阿里百炼 Standard","per10":null,"price":"¥139/月","quota":"45,000 Credits/月，系数待查","source":"https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"}];
-function fmt(n){if(n==null)return '待查';if(n>=1e8)return (n/1e8).toFixed(2)+'亿';if(n>=1e4)return Math.round(n/1e4)+'万';return ''+n;}
-PLANS.sort(function(a,b){return (b.per10||-1)-(a.per10||-1);});
+// ponytail: data inlined so file:// works with zero backend; test_data.py enforces sync with plans.json
+const PLANS = [{"id": "volc-lite", "vendor": "火山方舟", "name": "Coding Plan Lite", "price": "¥40/月", "price_usd": 5.555555555555555, "quota": "18000次/月 (1200/5h)，全模型共享额度", "per10": 149850000, "per10_peak": null, "estimated": true, "formula": "18000次×4625tokens/次÷$5.56×10；共享请求数口径，非token口径", "source": "https://ai.volcengine.com/activity/codingplan", "note": ""}, {"id": "volc-pro", "vendor": "火山方舟", "name": "Coding Plan Pro", "price": "¥200/月", "price_usd": 27.77777777777778, "quota": "90000次/月 (6000/5h)，全模型共享额度", "per10": 149850000, "per10_peak": null, "estimated": true, "formula": "90000次×4625tokens/次÷$27.8×10；共享请求数口径，非token口径", "source": "https://ai.volcengine.com/activity/codingplan", "note": ""}, {"id": "tc-max", "vendor": "腾讯云 TokenHub", "name": "Token Plan Max", "price": "$103/月", "price_usd": 103, "quota": "15900 积分/订阅月（V4.1 Flash 原厂直供）", "per10": 57173621, "per10_peak": 28067359, "estimated": true, "formula": "15900积分÷$103×10×37037 tokens/积分（官方综合单价：谷27/峰55积分每1M）", "source": "https://www.tencentcloud.com/document/product/1300/81316", "note": ""}, {"id": "tc-pro", "vendor": "腾讯云 TokenHub", "name": "Token Plan Pro", "price": "$51/月", "price_usd": 51, "quota": "7900 积分/订阅月", "per10": 57371039, "per10_peak": 28164274, "estimated": true, "formula": "7900积分÷$51×10×37037 tokens/积分（官方综合单价：谷27/峰55积分每1M）", "source": "https://www.tencentcloud.com/document/product/1300/81316", "note": ""}, {"id": "tc-standard", "vendor": "腾讯云 TokenHub", "name": "Token Plan Standard", "price": "$17/月", "price_usd": 17, "quota": "2600 积分/订阅月", "per10": 56644823, "per10_peak": 27807764, "estimated": true, "formula": "2600积分÷$17×10×37037 tokens/积分（官方综合单价：谷27/峰55积分每1M）", "source": "https://www.tencentcloud.com/document/product/1300/81316", "note": ""}, {"id": "tc-lite", "vendor": "腾讯云 TokenHub", "name": "Token Plan Lite", "price": "$7/月", "price_usd": 7, "quota": "1000 积分/订阅月", "per10": 52910000, "per10_peak": 25974285, "estimated": true, "formula": "1000积分÷$7×10×37037 tokens/积分（官方综合单价：谷27/峰55积分每1M）", "source": "https://www.tencentcloud.com/document/product/1300/81316", "note": ""}, {"id": "opencode-go", "vendor": "OpenCode", "name": "Go", "price": "$10/月", "price_usd": 10, "quota": "V4.1 Flash 月额度 $15（促销期 4x=$60，2026-09-27 结束）", "per10": 30769230, "per10_peak": 15384615, "estimated": false, "note": "促销期谷 1.23亿 / 峰 0.62亿", "formula": "月$15÷官方谷价$0.4875/1M（=$0.15入/$0.60出，官方单价表）", "source": "https://opencode.ai/docs/zh-cn/go/"}, {"id": "ali-lite", "vendor": "阿里云百炼", "name": "Token Plan Lite", "price": "¥39/月", "price_usd": 5.416666666666667, "quota": "11500 Credits/订阅月（含 deepseek-v4.1-flash，22:00-08:00 五折）", "per10": null, "per10_peak": null, "estimated": true, "formula": "Credits 抵扣系数官方未公开（deepseek-v4.1-flash 档位待查）", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview", "note": ""}, {"id": "ali-essential", "vendor": "阿里云百炼", "name": "Token Plan Essential", "price": "¥79/月", "price_usd": 10.972222222222221, "quota": "25500 Credits/订阅月", "per10": null, "per10_peak": null, "estimated": true, "formula": "Credits 抵扣系数官方未公开", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview", "note": ""}, {"id": "ali-standard", "vendor": "阿里云百炼", "name": "Token Plan Standard", "price": "¥139/月", "price_usd": 19.305555555555554, "quota": "45000 Credits/订阅月", "per10": null, "per10_peak": null, "estimated": true, "formula": "Credits 抵扣系数官方未公开", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview", "note": ""}, {"id": "ali-pro", "vendor": "阿里云百炼", "name": "Token Plan Pro", "price": "¥499/月", "price_usd": 69.30555555555556, "quota": "180000 Credits/订阅月", "per10": null, "per10_peak": null, "estimated": true, "formula": "Credits 抵扣系数官方未公开", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview", "note": ""}, {"id": "atlas-starter", "vendor": "Atlas Cloud", "name": "Coding Plan Starter", "price": "价格需登录", "price_usd": null, "quota": "1650万 积分/周（flash 倍率 0.73入/2.18出）", "per10": null, "per10_peak": null, "estimated": true, "formula": "官方倍率：1积分≈0.55 flash tokens；价格 JS 渲染未取到", "source": "https://www.atlascloud.ai/zh/coding-plan", "note": ""}, {"id": "atlas-plus", "vendor": "Atlas Cloud", "name": "Coding Plan Plus", "price": "价格需登录", "price_usd": null, "quota": "8250万 积分/周", "per10": null, "per10_peak": null, "estimated": true, "formula": "官方倍率：1积分≈0.55 flash tokens；价格 JS 渲染未取到", "source": "https://www.atlascloud.ai/zh/coding-plan", "note": ""}, {"id": "atlas-ultra", "vendor": "Atlas Cloud", "name": "Coding Plan Ultra", "price": "价格需登录", "price_usd": null, "quota": "3.3亿 积分/周", "per10": null, "per10_peak": null, "estimated": true, "formula": "官方倍率：1积分≈0.55 flash tokens；价格 JS 渲染未取到", "source": "https://www.atlascloud.ai/zh/coding-plan", "note": ""}];
+function fmt(n){if(n==null)return '—';if(n>=1e8)return (n/1e8).toFixed(2)+'亿';if(n>=1e4)return Math.round(n/1e4)+'万';return ''+n;}
+PLANS.sort(function(a,b){return (b.per10==null?-1:b.per10)-(a.per10==null?-1:a.per10);});
 var t=document.getElementById('t'),medal=['🥇','🥈','🥉'];
 PLANS.forEach(function(p,i){
+var g=p.per10==null?'<span class="wait">待查</span>':'<span class="num">'+fmt(p.per10)+(p.estimated?'*':'')+'</span>';
+var pk=p.per10_peak==null?'<span class="wait">—</span>':fmt(p.per10_peak)+(p.estimated?'*':'');
 var tr=document.createElement('tr');
-tr.innerHTML='<td>'+(medal[i]||(i+1))+'</td><td>'+p.name+'<br><small>'+p.flagship+'</small></td><td>'+p.price+'</td><td><small>'+p.quota+'</small></td><td class="num">'+fmt(p.per10)+(p.per10!=null&&p.estimated?'*':'')+'</td><td><small>'+p.formula+'</small></td><td class="src"><a href="'+p.source+'">用量文档</a></td>';
+tr.innerHTML='<td>'+(p.per10==null?'·':(medal[i]||(i+1)))+'</td><td>'+p.name+'</td><td>'+p.vendor+'</td><td>'+p.price+'</td><td class="note">'+p.quota+'</td><td>'+g+'</td><td class="note">'+pk+'</td><td class="note">'+p.formula+'</td><td class="src"><a href="'+p.source+'">官方</a></td>';
+if(p.note)tr.title=p.note;
 t.appendChild(tr);});
 </script>
 </body>
