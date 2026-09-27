@@ -9,5 +9,5 @@ assert m and "fetch(" not in html, "page must be fetch-free single file"
 inline = json.loads(m.group(1))
 assert [p["id"] for p in inline] == [p["id"] for p in plans], "id drift"
 assert all(a["per10"] == b["per10"] for a, b in zip(inline, plans)), "per10 drift"
-assert len(plans) == 12
+assert len(plans) == 4
 print(f"ok: {len(plans)} rows in sync, fetch-free")

@@ -12,7 +12,7 @@ Built to fix three failure modes every subscription buyer has met:
 - **#1: Units don't compare.** 18,000 requests vs $60 credits vs 100,000 AFP — no common denominator. **Fix:** one number per plan (flash-equiv tokens per $10, flagship-model priced), formula shown.
 - **#2: Request plans hide tokens.** Coding Plans print requests, not tokens; real yield depends on model, multiplier, peak hours. **Fix:** open estimated conversion (`*` = estimated), assumption in the open, never a hidden number.
 - **#3: Static tables rot.** Prices and multipliers change every few weeks. **Fix:** data lives in one `plans.json`; a PR with a source link updates the whole rank.
-> Seed snapshot: ChatGPT Plus ~252亿*/$10 (GPT-5.5 ×105) vs MiniMax Max ~188亿* vs Claude Pro ~184亿* — same money. Formulas in `plans.json`, independent re-checks welcome.
+> Seed snapshot: 火山 Lite/Pro ~1.5亿*/$10 (shared requests) vs OpenCode Go 谷1.23亿 exact (official $ table) — 阿里 Standard pending (credits rate unknown). Formulas in `plans.json`, independent re-checks welcome.
 ---
 ## How it runs
 Three files, no build, zero backend.
@@ -26,7 +26,7 @@ Three files, no build, zero backend.
 | Unit | Flash-equiv tokens per $10 (anchor deepseek-v4.1-flash @ $0.2262/1M blended 1:3) |
 | Formula | Every row carries its conversion assumption — no black-box numbers |
 | Source | Every row links its vendor page; PRs without a source link don't merge |
-| Scope | AI coding subscriptions first (Coding / Token / Membership); IDE plans later |
+| Scope | Only plans officially shipping deepseek-v4.1-flash (single-vendor plans excluded) |
 ---
 **Repo layout**
 ```
