@@ -131,6 +131,7 @@
 | `quota.sub_limit` | 结构化保留，**本次不参与计算** |
 | `assumptions.tokens_per_request` | 量级包围：`{low, base, high, source}`，无出处必须**显式** `"source": null` |
 | `assumptions.credits_per_1m` | 官方费率：`{base, peak, source}`，无区间 |
+| `assumptions.tokens_per_credit` | 厂商以「每积分多少 token」发布时的替代方向：`{base, source}`；与 `credits_per_1m` 二者择一，同时存在时以本字段优先 |
 | `verified.sources` | 非空数组；已排行的行必须有至少一个官方链接 |
 | `estimated` | **不再是字段**，由 5.4 派生 |
 
@@ -142,7 +143,7 @@
 |---|---|---|
 | `token` | `amount` | 无 |
 | `request` | `amount × tokens_per_request[k]` | `tokens_per_request` |
-| `credit` | `amount ÷ credits_per_1m × 10⁶` | `credits_per_1m`（官方系数） |
+| `credit` | `amount ÷ credits_per_1m × 10⁶`，或以 `amount × tokens_per_credit` 替代 | `credits_per_1m` 或 `tokens_per_credit`（官方系数） |
 | `usd_credit` | `amount ÷ blend × 10⁶` | 经锚价，蕴含混合比与缓存假设 |
 
 ## 5. 计算规则
@@ -203,7 +204,7 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 ### 5.5 排序
 
 1. 已排行的行按 `per10` 下界降序；
-2. `per10` 下界相等时按 `id` 稳定排序并显示并列名次（火山 Lite 与 Pro 即为此例）；
+2. `per10` 下界相等时按 `id` 稳定排序并显示并列名次（火山 Lite 与 Pro 即为此例）；并列**占用两个位次**，其后名次继续递增（竞赛式排名：`1,2,3,4,5,5,7`）；
 3. `per10` 下界为 `null`（待查）的行排在最后，名次列显示 `·`；
 4. 合成基线行不参与名次，固定钉在表首。
 
@@ -225,7 +226,7 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 
 三条由此暴露、需要写进文案的事实：
 
-1. **腾讯的 `per10` 是定值**：额度与系数皆为官方数，纯算术。所以它的区间宽度在 `per10` 上为 0，不确定性全部体现在倍数上（0.79×–3.18×）——即"这些 token 值多少钱"不确定，而"有多少 token"确定。
+1. **腾讯的 `per10` 是定值**：额度与系数皆为官方数，纯算术。所以它的区间宽度在 `per10` 上为 0，不确定性全部体现在倍数上（0.794×–3.176×）——即"这些 token 值多少钱"不确定，而"有多少 token"确定。
 2. **OpenCode 的倍数恒为 1.500×**：美元额度，倍数 = `$15 ÷ $10`，与混合比、与 `tokens/请求` 全然无关。它是全榜唯一保底划算的行。
 3. **腾讯与火山在"读为主"角上都跌破 1.0×**（0.797× / 0.450×）：该场景下买套餐不如直接充 API。
 
@@ -245,7 +246,7 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 | 额度 | 原文 + `sub_limit` |
 | 每 $10 flash（谷） | **下界**大字 + 次行小字 `基准 X · 上限 Y`（区间折叠进本列，不加列） |
 | 峰值场景（峰） | 沿用现列 |
-| **相对直充 API** | `倍数区间`（如 `0.79× – 3.18×`）；区间宽度为 0 时显示单值 |
+| **相对直充 API** | `倍数区间`（如 `0.794× – 3.176×`，三位小数去尾零）；区间宽度为 0 时显示单值 |
 | 假设与公式 | 原语清单 + 可复算的公式串 + 假设数徽章 + 腾讯的保留意见 |
 | 来源 | 官方链接 + `核验于 <date>` |
 
@@ -301,7 +302,7 @@ FORMULA = { effInput, blend, baseline, planTokens, per10, corners, rowStats, ran
 | 1 | `index.html` 内联的 `SCENARIO`/`PLANS` 与 `plans.json` 深度相等 |
 | 2 | `plans.json` 全文中不存在 `per10` 字段（守住 D5，防回潮） |
 | 3 | 每个已排行：`low ≤ base ≤ high`；`per10` 下界序列非递增；待查行在末尾 |
-| 4 | 回归锚：OpenCode 倍数三角均 `=== 1.5`；腾讯 Max `per10` 基准 `=== 57173688`；火山 Lite `per10` 下界 `=== 32400000`；基线（1:3）`=== 22153846` |
+| 4 | 回归锚：OpenCode 倍数三角均 `=== 1.5`；腾讯 Max `per10` 基准 `=== 57173679`（token 数取整后）；火山 Lite `per10` 下界 `=== 32400000`；基线（1:3）`=== 22153846` |
 | 5 | 徽章计数 == 计算出的 `assumption_count` == 派生 `estimated` 的依据 |
 | 6 | `index.html` 不含 `fetch(` |
 | 7 | 已排行行的 `verified.sources` 非空；每个无出处假设显式写了 `"source": null` |
