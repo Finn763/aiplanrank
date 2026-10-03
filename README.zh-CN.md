@@ -12,7 +12,7 @@
 - **#1：单位不可比。** 18000次 vs $60 credits vs 100000 AFP，没法直接比。**解：** 每家只比$10 flash等价Token（按旗舰模型API价折），公式公开。
 - **#2：按次套餐藏Token。** Coding Plan只印次数不印Token，实际量看模型、倍率、高峰系数。**解：** 估算值自带派生的假设数，假设写在明处。
 - **#3：静态表放半个月就烂。** 价格倍率几周一变。**解：** 数据全在`plans.json`，一个带来源链接的PR即更新全榜。
-> 种子快照（每 $10，谷时，**按双轴区间的下界排**：入:出混合比 × tokens/请求）：腾讯云 TokenHub Pro 5,737万 `官方直算` > 腾讯云 Max 5,717万 > 腾讯云 Standard 5,664万 > 腾讯云 Lite 5,291万 > 火山 Lite/Pro 3,240万（请求数口径，1 个假设）> OpenCode Go 2,700万（倍数恒 **1.500×**，与你的用法无关）。前四名全是腾讯且极差仅 7.8%，它们之间的名次没有决策意义。在悲观角上，腾讯（0.797×）与火山（0.450×）都**跌破 1.0×**，即不如直接充 API。阿里百炼与 Atlas Cloud 宁可标待查也不猜。锚价与每条假设都能从 `plans.json` 复算。
+> 种子快照（每 $10，谷时，**按双轴区间的下界排**：入:出混合比 × tokens/请求）：腾讯云 TokenHub Pro 5,737万 `官方直算` > 腾讯云 Max 5,717万 > 腾讯云 Standard 5,664万 > 腾讯云 Lite 5,291万 > 火山 Lite/Pro 3,240万（请求数口径，1 个假设，0.45× – 36×）> OpenCode Go 2,700万（倍数恒 **1.5×**，与你的用法无关）。前四名全是腾讯且极差仅 7.8%，它们之间的名次没有决策意义。在悲观角上，腾讯（0.797×）与火山（0.45×）都**跌破 1.0×**，即不如直接充 API。阿里百炼与 Atlas Cloud 宁可标待查也不猜。锚价与每条假设都能从 `plans.json` 复算。
 ---
 ## 怎么跑
 四文件，无构建，无后端。
@@ -39,6 +39,13 @@ test_data.js   # 抽取 FORMULA 块，校验同步与回归锚
 ```
 ## 贡献
 欢迎PR：一行=价格+额度+假设+来源链接，估算值自带假设数（`N 个假设`），`官方直算` 表示零假设。过期数据直接修。新增套餐必须填假设；按区间下界排序可能让区间更宽的行名次低于区间更紧的行——这是刻意行为。
+### 加一行
+1. 把该行的原语写进 `plans.json`：价格、额度、假设（`low/base/high`；没有公开出处的量必须写 `"source": null`）、`verified.sources`，以及对来源口径的保留意见 `note`。
+2. 重新生成页面内联的那一份——`index.html` 自带一组 `SCENARIO`/`PLANS` 行，`test_data.js` 会比对这两份：
+```bash
+node -e "const fs=require('fs'),d=require('./plans.json'),p='index.html';let h=fs.readFileSync(p,'utf8');const put=(k,v)=>h=h.replace(new RegExp('^const '+k+' = .*;$','m'),()=>'const '+k+' = '+JSON.stringify(v)+';');put('SCENARIO',d.scenario);put('PLANS',d.plans);fs.writeFileSync(p,h)"
+```
+3. `node test_data.js`——内联数据没同步会挂在 `assert1a`/`assert1b`；新行还可能碰到这些钉子：行数（14，`assert0c`）、第一名锚（`tc-pro`，`assert4h`）、第七名锚（`opencode-go`，竞赛式名次 `1,2,3,4,5,5,7`，`assert4i`），以及两份 README 必须印出的数字（`assert13a`/`assert13b`）。改钉子数据或改这一行——不要改断言。
 ## 怎么复算
 
 ```bash

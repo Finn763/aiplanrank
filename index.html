@@ -25,12 +25,13 @@ h2{font-size:17px;margin-top:28px}
 </head>
 <body>
 <h1>aiplanrank <small>$10 能烧多少 deepseek-flash</small></h1>
-<p>锚定模型 <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/">deepseek-flash（DeepSeek-V4.1-Flash）</a>：官方价 ¥1/1M 入（缓存未命中）、¥4/1M 出（空闲时段，高峰 2 倍），¥7.2 = $1。默认场景：<b>谷时 · 无缓存 · 假设混合比 1:3</b>。区间 = 「入:出混合比（全输出↔全输入物理边界）」×「tokens/请求（1000↔20000 量级包围，非实测）」两轴的包络，<b>名次按区间下界排</b>。谷时＝非工作日时段；峰时覆盖工作日 9:00–12:00 / 14:00–18:00。<span class="badge">N 个假设</span><span class="ok">官方直算</span></p>
+<p>锚定模型 <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/">deepseek-flash（DeepSeek-V4.1-Flash）</a>。<span id="scenario-line"></span>区间来自假设量级包围与物理边界，非实测，<b>名次按区间下界排</b>。谷时＝非工作日时段；峰时覆盖工作日 9:00–12:00 / 14:00–18:00。<span class="badge">N 个假设</span><span class="ok">官方直算</span></p>
 <div class="scroll">
 <table id="t"><tr><th>#</th><th>套餐</th><th>厂商</th><th>价格</th><th>额度</th><th>每 $10 flash（谷）</th><th>峰值（峰）</th><th>相对直充 API</th><th>假设与公式</th><th>来源</th></tr></table>
 </div>
 
 <h2>候选池（尚未核实到官方额度/系数，不进榜）</h2>
+<div class="scroll">
 <table>
 <tr><th>厂商</th><th>状态</th></tr>
 <tr><td>联通云 Coding Plan</td><td class="note">第三方汇总称含 DeepSeek-V4-Flash、Lite ¥40；官方额度页未核实</td></tr>
@@ -39,6 +40,7 @@ h2{font-size:17px;margin-top:28px}
 <tr><td>优云智算 / 商汤 / 移动云 / 天翼云 / 九章</td><td class="note">含 flash 与否、额度口径均未核实</td></tr>
 <tr><td>Atlas Cloud 加油包</td><td class="note">倍率公开（flash 0.73入/2.18出），套餐价需登录</td></tr>
 </table>
+</div>
 
 <footer>核验日期逐行标注于来源列 · 机器可读数据 <a href="plans.json">plans.json</a>（与页内内联数据一致，见 test_data.js） · 欢迎带官方来源的 PR 修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
 <script>
@@ -145,11 +147,19 @@ function pendingReason(plan, scenario){
   return '缺 tokens_per_request 出处';
 }
 
+// 积分类行的「token 产出」缺口只计一次：与 planTokens 的读取优先级一致（spec §5.4）
+function creditYieldUnsourced(plan){
+  var a = plan.assumptions, c = a.credits_per_1m;
+  if (c && c.base !== null && c.base !== undefined) return c.source === null;
+  var t = a.tokens_per_credit;
+  return !!(t && t.base !== null && t.base !== undefined && t.source === null);
+}
+
 function assumptionCount(plan, scenario){
   if (status(plan, scenario) === 'pending') return null;
   var n = 0, a = plan.assumptions;
   if (a.tokens_per_request && a.tokens_per_request.source === null) n++;
-  if (a.credits_per_1m && a.credits_per_1m.base !== null && a.credits_per_1m.base !== undefined && a.credits_per_1m.source === null) n++;
+  if (creditYieldUnsourced(plan)) n++;
   if (plan.quota.unit === 'usd_credit') n++;
   return n;
 }
@@ -223,6 +233,69 @@ function badgeText(count){
   return count === 0 ? '官方直算' : count + ' 个假设';
 }
 
+// 价格折成美元文本：小于 $1 用 4 位小数（如锚价 $0.4514），否则 2 位去尾零
+function fmtUsd(n){
+  return '$' + trimNum(n, n < 1 ? 4 : 2);
+}
+
+// 可复算的公式串：先写该行 base 口径用到的原语，末段固定为价格步（÷ 单价 × 10）
+// 每个数都从 plan / scenario 现算，页面与测试跑的是同一份函数体（spec §6.1）
+function fmtFormula(plan, scenario){
+  if (status(plan, scenario) !== 'ranked') return null;
+  var usd = priceUsd(plan, scenario);
+  if (usd === null) return null;
+  var q = plan.quota, a = plan.assumptions, steps = [];
+  if (q.unit === 'token'){
+    steps.push(trimNum(q.amount, 0) + ' tokens');
+  } else if (q.unit === 'request'){
+    var t = a.tokens_per_request;
+    if (!t) return null;
+    steps.push(trimNum(q.amount, 0) + ' 次 × ' + trimNum(t.base, 0) + ' tokens/次');
+  } else if (q.unit === 'credit'){
+    var c = a.credits_per_1m, tc = a.tokens_per_credit;
+    if (c && c.tokens_per_credit !== null && c.tokens_per_credit !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 × ' + trimNum(c.tokens_per_credit, 4) + ' tokens/积分');
+    } else if (c && c.base !== null && c.base !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 ÷ ' + trimNum(c.base, 0) + ' 积分/1M × 10⁶');
+    } else if (tc && tc.base !== null && tc.base !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 × ' + trimNum(tc.base, 4) + ' tokens/积分');
+    } else {
+      return null;
+    }
+  } else if (q.unit === 'usd_credit'){
+    steps.push('$' + trimNum(q.amount, 2) + ' 额度 ÷ 锚价 ' + fmtUsd(blendCny(scenario, scenario.baseline_mix.in_out) / fxRate(scenario)) + '/1M × 10⁶');
+  } else {
+    return null;
+  }
+  return steps.join(' ') + ' ÷ ' + fmtUsd(usd) + ' × 10';
+}
+
+// 请求数行的 tokens/请求 量级包围（所有请求数行的并集），供表头声明使用
+function tprBounds(plans){
+  var low = null, high = null;
+  (plans || []).forEach(function (p) {
+    var t = p.assumptions.tokens_per_request;
+    if (!t || p.quota.unit !== 'request') return;
+    if (low === null || t.low < low) low = t.low;
+    if (high === null || t.high > high) high = t.high;
+  });
+  return { low: low, high: high };
+}
+
+// 表头声明的默认场景句：每个数字都从 SCENARIO / PLANS 派生，不再手抄（spec §6.6）
+function fmtScenarioLine(scenario, plans){
+  var off = anchorAt(scenario, false), peak = anchorAt(scenario, true);
+  var mixP = scenario.mix_bounds.pessimistic, mixO = scenario.mix_bounds.optimistic;
+  var tb = tprBounds(plans);
+  var cny = function (n) { return '¥' + trimNum(n, 4); };
+  var tpr = tb.low === null ? '—' : trimNum(tb.low, 0) + ' ↔ ' + trimNum(tb.high, 0);
+  return '默认场景：<b>' + scenario.label + '</b>；锚价 ' + cny(off.input_miss) + '/1M 入（缓存未命中）· '
+       + cny(off.output) + '/1M 出（空闲时段；高峰 ×' + trimNum(scenario.peak_multiplier, 2) + ' → '
+       + cny(peak.input_miss) + ' / ' + cny(peak.output) + '）· fx ¥' + trimNum(scenario.fx.rate, 2) + ' = $1；'
+       + '区间 = 「入:出混合比 ' + mixP[0] + ':' + mixP[1] + ' ↔ ' + mixO[0] + ':' + mixO[1] + '」×'
+       + '「tokens/请求 ' + tpr + '」两轴的包络（物理边界 × 量级包围，非实测）。';
+}
+
 function isPromoExpired(plan, todayISO){
   return !!(plan.price.promo_until && plan.price.promo_until < todayISO);
 }
@@ -239,15 +312,21 @@ var FORMULA = {
   anchorAt: anchorAt, planTokensPeak: planTokensPeak, per10Peak: per10Peak,
   status: status, pendingReason: pendingReason, assumptionCount: assumptionCount, isEstimated: isEstimated,
   rowStats: rowStats, rank: rank, trimNum: trimNum, fmtTokens: fmtTokens, fmtMultiple: fmtMultiple,
-  fmtRange: fmtRange, badgeText: badgeText, isPromoExpired: isPromoExpired, isStale: isStale
+  fmtRange: fmtRange, fmtUsd: fmtUsd, fmtFormula: fmtFormula, fmtScenarioLine: fmtScenarioLine,
+  badgeText: badgeText, isPromoExpired: isPromoExpired, isStale: isStale
 };
 var TODAY = new Date().toISOString().slice(0, 10);
 var T = document.getElementById('t');
 
+// 表头声明的默认场景句由 SCENARIO 派生，免得与数据里的原语各说各话（spec §6.6）
+var scenarioEl = document.getElementById('scenario-line');
+if (scenarioEl) scenarioEl.innerHTML = FORMULA.fmtScenarioLine(SCENARIO, PLANS);
+
 function cell(html, cls){ return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + html + '</td>'; }
-function appendRow(cells, cls){
+function appendRow(cells, cls, title){
   var tr = document.createElement('tr');
   if (cls) tr.className = cls;
+  if (title) tr.title = title; // 保留意见也挂到整行，悬停即可读到（spec §5.4）
   tr.innerHTML = cells.join('');
   T.appendChild(tr);
 }
@@ -278,8 +357,15 @@ function formulaCell(p, st){
   var tc = p.assumptions.tokens_per_credit;
   if (tc) bits.push('官方 ' + tc.base + ' token/积分');
   if (p.quota.unit === 'usd_credit') bits.push('经锚价折算（蕴含读者混合比与缓存行为）');
+  var html = '<div class="note">' + bits.join('；') + '</div>';
+  // 可复算的公式串：原语 → token 产出 → 价格步（spec §6.1）
+  var f = FORMULA.fmtFormula(p, SCENARIO);
+  if (f) html += '<div class="note">' + f + '</div>';
   var badgeCls = st.count === 0 ? 'ok' : 'badge';
-  return '<div class="note">' + bits.join('；') + '</div><span class="' + badgeCls + '">' + FORMULA.badgeText(st.count) + '</span>';
+  html += '<span class="' + badgeCls + '">' + FORMULA.badgeText(st.count) + '</span>';
+  // 来源口径的保留意见（如腾讯「官方综合单价的混合比口径未公开」）不能是只维护、不显示的字段
+  if (p.note) html += '<div class="note">' + p.note + '</div>';
+  return html;
 }
 
 var baseTokens = FORMULA.baselinePer10(SCENARIO, SCENARIO.baseline_mix.in_out);
@@ -321,7 +407,7 @@ FORMULA.rank(PLANS, SCENARIO).forEach(function(r){
     cell('<span class="num">' + FORMULA.fmtRange(r.multiple.low, r.multiple.high, FORMULA.fmtMultiple) + '</span>'),
     cell(formulaCell(p, r)),
     cell(sourceCell(p), 'src')
-  ]);
+  ], null, p.note);
 });
 </script>
 </body>
