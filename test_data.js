@@ -105,5 +105,31 @@ assert(FORMULA.fmtTokens(22153846) === '2,215万', 'assert8f: baseline formattin
 assert(FORMULA.fmtTokens(149850000) === '1.5亿', 'assert8g: 亿 formatting');
 assert(FORMULA.fmtMultiple(1.5) === '1.5×' && FORMULA.fmtMultiple(3.176) === '3.176×', 'assert8h: multiple formatting');
 
+// --- 呈现层 ---
+assert(!/fetch\(/.test(html), 'assert6: index.html is fetch-free');
+assert(/id="t"/.test(html), 'assert6b: table#t exists');
+assert(/overflow-x\s*:\s*auto/.test(html), 'assert6c: table wrapper scrolls horizontally');
+assert(html.indexOf('相对直充 API') >= 0, 'assert6d: baseline column header present');
+assert(html.indexOf('现金直充 DeepSeek API') >= 0, 'assert6e: synthetic baseline row present');
+assert(html.indexOf('new Date()') >= 0, 'assert6f: page injects the viewer date');
+assert(!/FORMULA:START[\s\S]*?Date\.now\(\)/.test(html), 'assert6g: FORMULA block does not read the clock');
+
+let okProv = true;
+plansDoc.plans.forEach(function (p) {
+  if (!p.verified || !Array.isArray(p.verified.sources) || p.verified.sources.length === 0) okProv = false;
+  ASSUMPTION_KEYS.forEach(function (k) {
+    var a = p.assumptions[k];
+    if (a && !('source' in a)) okProv = false;
+  });
+});
+assert(okProv, 'assert7: every row has sources; every assumption states source explicitly');
+
+const today = '2026-10-03';
+assert(FORMULA.isPromoExpired(byId('opencode-go'), today) === true, 'assert8a: opencode promo expired on 2026-10-03');
+assert(FORMULA.isPromoExpired(byId('volc-lite'), today) === false, 'assert8b: volc-lite has no promo');
+assert(FORMULA.isStale(byId('opencode-go'), today) === false, 'assert8c: 6 days old is not stale');
+assert(FORMULA.isStale(byId('volc-lite'), '2026-12-26') === false, 'assert8d: exactly 90 days is not stale');
+assert(FORMULA.isStale(byId('volc-lite'), '2026-12-27') === true, 'assert8i: 91 days is stale');
+
 if (failed) { console.error('\n' + failed + ' assertion(s) failed'); process.exit(1); }
 console.log('\nall assertions passed');
