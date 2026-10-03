@@ -627,8 +627,8 @@ git commit -m "formula: single pure implementation extracted from index.html
 - test_data.js extracts that block verbatim and executes it, so it tests the
   code the page runs instead of a second implementation
 - inline SCENARIO/PLANS pinned to plans.json by deep equality
-- regression anchors: OpenCode 1.5x, tc-max 57173678, volc-lite 32400000,
-  baseline(1:3) 22153846, tc-max peak 28066108
+- regression anchors: OpenCode 1.5x, tc-max 57173679, volc-lite 32400000,
+  baseline(1:3) 22153846, tc-max peak 28067079
 - delete test_data.py (dual implementation + GBK crash on Chinese Windows)"
 ```
 
@@ -863,18 +863,20 @@ jobs:
 先备份，再故意改坏一个原语：
 
 ```bash
-cp plans.json /tmp/plans.json.bak
+Copy-Item plans.json "$env:TEMP/plans.json.bak" -Force   # Windows 检出：/tmp 不存在，备份放仓库外
 node -e "const fs=require('fs');const t=fs.readFileSync('plans.json','utf8').replace('\"base\": 4625','\"base\": 99999');fs.writeFileSync('plans.json',t)"
-node test_data.js; echo "exit=$?"
+node test_data.js; "exit=$LASTEXITCODE"
 ```
 
-Expected: 出现 `FAIL: assert1a` 或 `FAIL: assert4c`（内联数据与 `plans.json` 不再一致），`exit=1`。
+Expected: 出现 `FAIL: assert1b`、`FAIL: assert3a`、`FAIL: assert4f`，`exit=1`。
+（计划初稿写的是 `assert1a`/`assert4c`，两个都不受 `base` 改动影响：`assert1a` 只比较 `SCENARIO`，`assert4c` 钉的是 `per10.low`。实际触发的是上面这三个。）
 
 - [ ] **Step 3: 恢复并确认变绿**
 
 ```bash
-cp /tmp/plans.json.bak plans.json
-node test_data.js; echo "exit=$?"
+Copy-Item "$env:TEMP/plans.json.bak" plans.json -Force
+node test_data.js; "exit=$LASTEXITCODE"
+git status --porcelain   # 必须为空，证明恢复干净
 ```
 
 Expected: 全部 `ok:`，`exit=0`。

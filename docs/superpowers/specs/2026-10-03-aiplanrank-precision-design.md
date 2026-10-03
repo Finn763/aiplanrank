@@ -153,7 +153,9 @@
 ```
 eff_input(mix) = (1 - cache_hit_rate) × anchor.input_cache_miss + cache_hit_rate × anchor.input_cache_hit
 blend(mix)     = (mix.in × eff_input + mix.out × anchor.output) / (mix.in + mix.out)   // ¥/1M，空闲
-blend_peak     = blend × peak_multiplier                                                // peak_multiplier = 2（官方）
+blend_peak     = 用 anchor 的 peak 价格按同一混合比重算
+                 // peak 价格是原语；peak_multiplier 只是声明式的一致性关系，
+                 // 由 7.2 断言 peak === off_peak × peak_multiplier 钉住，避免同一事实两份各自漂移
 baseline(mix)  = 10 / (blend / fx.rate) × 10⁶                                            // tokens per $10
 ```
 
@@ -178,12 +180,13 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 
 > `assumption_count` = 该行 `per10` 计算中**实际读取且无出处**的量的个数。全局用法参数在同一行内最多计一次，避免同一个全局缺口在多行被重复放大。
 
-封闭清单，只有三项参与计数：
+封闭清单，只有四项参与计数（credit 行按 `credits_per_1m` 与 `tokens_per_credit` 择一，同一行只计一次）：
 
 | 计数量 | 无出处的理由 |
 |---|---|
 | `assumptions.tokens_per_request` | 请求→token 换算，无量级来源 |
 | `assumptions.credits_per_1m` | 若系数无官方出处则计数（本次腾讯四行有出处，故不计数） |
+| `assumptions.tokens_per_credit` | credit 收益的替代方向；无官方出处时同样计数，否则 Atlas 那种「每积分 0.55 token」会绕开来源规则 |
 | **锚价折算路径** | 该路径蕴含读者的混合比与缓存行为两个未发表的用法参数，整体计为一 |
 
 `fx`、`anchor.price_cny_per_1m`、`cache_hit_rate` 的价格部分**有出处，不计数**。
@@ -219,16 +222,16 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 | 腾讯 Max `$103 / 15900 credit` | 5,717万（定值） | 5,717万 | 0.794× – 3.176× | 0 |
 | 腾讯 Standard `$17 / 2600 credit` | 5,664万（定值） | 5,664万 | 0.787× – 3.147× | 0 |
 | 腾讯 Lite `$7 / 1000 credit` | 5,291万（定值） | 5,291万 | 0.735× – 2.939× | 0 |
-| 火山 Lite `¥40 / 18000 req` | 3,240万 – 6.48亿 | 3,240万 | 0.450× – 36.00× | 1 |
-| 火山 Pro `¥200 / 90000 req` | 3,240万 – 6.48亿 | 3,240万 | 0.450× – 36.00× | 1 |
-| OpenCode Go `$10 / $15 usd_credit` | 2,700万 – 1.08亿 | 2,700万 | **1.500× – 1.500×** | 1 |
+| 火山 Lite `¥40 / 18000 req` | 3,240万 – 6.48亿 | 3,240万 | 0.45× – 36× | 1 |
+| 火山 Pro `¥200 / 90000 req` | 3,240万 – 6.48亿 | 3,240万 | 0.45× – 36× | 1 |
+| OpenCode Go `$10 / $15 usd_credit` | 2,700万 – 1.08亿 | 2,700万 | **1.5× – 1.5×** | 1 |
 | 阿里 ×4 / Atlas ×3 | — | 待查 | — | — |
 
 三条由此暴露、需要写进文案的事实：
 
 1. **腾讯的 `per10` 是定值**：额度与系数皆为官方数，纯算术。所以它的区间宽度在 `per10` 上为 0，不确定性全部体现在倍数上（0.794×–3.176×）——即"这些 token 值多少钱"不确定，而"有多少 token"确定。
-2. **OpenCode 的倍数恒为 1.500×**：美元额度，倍数 = `$15 ÷ $10`，与混合比、与 `tokens/请求` 全然无关。它是全榜唯一保底划算的行。
-3. **腾讯与火山在"读为主"角上都跌破 1.0×**（0.797× / 0.450×）：该场景下买套餐不如直接充 API。
+2. **OpenCode 的倍数恒为 1.5×**：美元额度，倍数 = `$15 ÷ $10`，与混合比、与 `tokens/请求` 全然无关。它是全榜唯一保底划算的行。
+3. **腾讯与火山在"读为主"角上都跌破 1.0×**（0.797× / 0.45×）：该场景下买套餐不如直接充 API。
 
 名次（按 5.5）：腾讯 Pro > 腾讯 Max > 腾讯 Standard > 腾讯 Lite > 火山 Lite = 火山 Pro > OpenCode Go。
 **前 4 名全是腾讯，极差 7.8%，其中 Pro 与 Max 仅差 0.34%**——该区间内的名次没有决策意义，必须在页面注明。
@@ -290,7 +293,10 @@ multiple(plan, corner) = per10(plan, corner) / baseline(corner.mix)
 `index.html` 中的公式写成不触碰 DOM 的纯函数，夹在 `/* FORMULA:START */` 与 `/* FORMULA:END */` 之间，入参只有 `scenario`、`plans`、`todayISO`。导出形状固定为：
 
 ```
-FORMULA = { effInput, blend, baseline, planTokens, per10, corners, rowStats, rank }
+FORMULA = { fxRate, effInputCny, blendCny, baselinePer10, priceUsd, corners, planTokens, per10Of,
+            anchorAt, planTokensPeak, per10Peak, status, pendingReason, assumptionCount, isEstimated,
+            rowStats, rank, trimNum, fmtTokens, fmtMultiple, fmtRange, fmtUsd, fmtFormula,
+            fmtScenarioLine, badgeText, isPromoExpired, isStale }
 ```
 
 `test_data.js` **从 `index.html` 原文抽取该段文本**并用 `new Function` 执行——测的就是页面运行的那份代码，不是重写的第二份。这是本次改动的核心机制：双实现是"精度幻觉"的病根。
@@ -331,7 +337,7 @@ FORMULA = { effInput, blend, baseline, planTokens, per10, corners, rowStats, ran
 ### 8.1 文案后果（属实现范围）
 
 1. 开头「火山 Lite/Pro ~1.5亿* 排第一」→ 改为按 `per10` 下界的真实名次，并点明前四名是腾讯、极差 7.8%
-2. 「OpenCode Go 3,077万 **exact**」→ 改为「倍数恒 1.500×，与用途无关」；`官方直算` 帽子移交腾讯
+2. 「OpenCode Go 3,077万 **exact**」→ 改为「倍数恒 1.5×，与用途无关」；`官方直算` 帽子移交腾讯
 3. 锚价说明从 `$0.15/$0.60` 改为 `¥1/¥4（缓存未命中，空闲）`，并声明 `fx = 7.2` 同时作用于锚价与套餐价
 4. 「一行 = 价格 + 额度 + **公式** + 来源」→「…+ **假设** + 来源」
 5. 「What's inside」的 Formula 行 → 改为讲假设数与双轴区间
@@ -356,10 +362,19 @@ FORMULA = { effInput, blend, baseline, planTokens, per10, corners, rowStats, ran
 3. 混合比轴两端取物理边界（全输入/全输出），比任何真实工作负载都宽，因此区间偏保守。
 4. `fx` 固定 7.2，不计汇率浮动，且不计入假设数；美元计价行的倍数依赖它。
 5. 腾讯「综合单价」的基准混合比未公开，5.4 的保留意见只是提示，未被建模。
-6. **缓存轴仍未建模，而官方价已就位**：输入缓存命中 ¥0.02/1M 比未命中 ¥1 便宜 50 倍。若按 `混合比 1:3 + 99.93% 输入命中` 计算，基线升到 **9,584万**（无缓存时 2,215万，差 4.3 倍），腾讯倍数降到 **0.597×**、火山降到 **0.338×**，而 OpenCode 仍是 **1.500×**。也就是说，一旦缓存进模型，全榜只剩美元额度行保底划算。这是最值得优先做的下一项。
+6. **缓存轴仍未建模，而官方价已就位**：输入缓存命中 ¥0.02/1M 比未命中 ¥1 便宜 50 倍。若按 `混合比 1:3 + 99.93% 输入命中` 计算，基线升到 **9,584万**（无缓存时 2,215万，差 4.3 倍），腾讯倍数降到 **0.597×**、火山降到 **0.338×**，而 OpenCode 仍是 **1.5×**。也就是说，一旦缓存进模型，全榜只剩美元额度行保底划算。这是最值得优先做的下一项。
 7. 头条数字用谷时，而峰值时段覆盖工作日常规写码时间（2.5 缺陷 3）。
 8. 阿里四行与 Atlas 三行的待查状态未解决，半张榜仍是空的。
 9. 请求数行的峰值列为 `null`（无官方依据），显示 `—`。
+
+### 10.1 整支审查后的遗留项（不阻塞合并，来自最终审查与修复波复审）
+
+10. **渲染层在仓库内没有任何自动化守护。** 验收用的 DOM 桩检查器（17 项断言，含 `NaN`/`Infinity` 扫描）位于 gitignore 的 `.superpowers/` 工作区；把它提升进仓库并接入 CI 超出本 spec §7 的范围，留给作者决定。它是最高价值的后续项：开发期间它抓到过 `FORMULA is not defined`（页面渲染 0 行而 49 条断言全绿）与 `per10.base` 的 NaN 一族。
+11. **`fmtFormula` 在契约外数据上抛异常。** 请求数行若缺 `tokens_per_request.base`，`trimNum(t.base, 0)` 抛 `TypeError` 并中止整表渲染（此前该行渲染为 NaN）。§7.2 只断言 `source` 键存在，没有断言 `base` 必须存在。
+12. **价格与系数没有正数保护。** `price.usd: 0` 或 `credits_per_1m.base: 0` 仍评为 `ranked`，页面会打印 `Infinity亿` 与 `÷ $0 × 10` 这类公式串。`peak_multiplier` 是唯一被检查了正数的量。
+13. **`fmtFormula` 覆盖不全。** `token` 分支与两个非 base 的 credit 分支没有夹具；`assert14a` 断言的是 `fmtScenarioLine` 的返回值而非表头接线，因此删掉表头那行赋值后测试仍然全绿。
+14. **7 个待查行的 `note` 仍不渲染。** C2 只把已排行行的 `note` 送上了页面；待查行（4 个阿里 + 3 个 Atlas）的 `note` 依旧只存在于 `plans.json`——与 C2 同类的"维护了但不生效"的字段。
+
 
 ## 11. 风险
 
