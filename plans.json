@@ -1,1 +1,183 @@
-[{"estimated": true, "formula": "月72亿÷$16.5(¥119按7.2)×10", "id": "minimax-max", "name": "MiniMax Max", "per10": 4356302521, "price": "¥119/月", "price_usd": 16.53, "quota": "月约72亿tokens*", "source": "https://agent.minimaxi.com/docs/code/account/usage"}, {"estimated": true, "formula": "月24亿÷$6.8(¥49按7.2)×10", "id": "minimax-plus", "name": "MiniMax Plus", "per10": 3526530612, "price": "¥49/月", "price_usd": 6.81, "quota": "月约24亿tokens*", "source": "https://agent.minimaxi.com/docs/code/account/usage"}, {"estimated": true, "formula": "月14.28亿÷$27.6(¥199按7.2)×10", "id": "kimi-allegretto", "name": "Kimi Allegretto", "per10": 516663317, "price": "¥199/月", "price_usd": 27.64, "quota": "月约14.28亿tokens*", "source": "https://www.kimi.com/help/membership/membership-pricing"}, {"estimated": true, "formula": "月6亿÷$20.7(¥149按7.2)×10", "id": "glm-pro", "name": "智谱 GLM Coding Pro", "per10": 289932883, "price": "¥149/月", "price_usd": 20.69, "quota": "月约6亿tokens*", "source": "https://docs.bigmodel.cn/cn/coding-plan/overview"}, {"estimated": true, "formula": "月4.8亿÷$20×10", "id": "chatgpt-plus", "name": "ChatGPT Plus / Codex", "per10": 240000000, "price": "$20/月", "price_usd": 20.0, "quota": "月约4.8亿tokens*", "source": "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan"}, {"estimated": true, "formula": "月2.9亿÷$13.75(¥99按7.2)×10", "id": "mimo-standard", "name": "小米 MiMo Standard", "per10": 210909089, "price": "¥99/月", "price_usd": 13.75, "quota": "月约2.9亿tokens*", "source": "https://mimo.mi.com/docs/zh-CN/price/token-plan"}, {"estimated": true, "formula": "月4.16亿÷$20×10", "id": "claude-pro", "name": "Claude Pro", "per10": 208000001, "price": "$20/月", "price_usd": 20.0, "quota": "月约4.16亿tokens*", "source": "https://claude.com/pricing"}, {"estimated": true, "formula": "月1.2亿÷$6.8(¥49按7.2)×10", "id": "glm-lite", "name": "智谱 GLM Coding Lite", "per10": 176326531, "price": "¥49/月", "price_usd": 6.81, "quota": "月约1.2亿tokens*", "source": "https://docs.bigmodel.cn/cn/coding-plan/overview"}, {"estimated": true, "formula": "月8325万÷$5.6(¥40按7.2)×10", "id": "volc-lite", "name": "火山方舟 Coding Lite", "per10": 149850000, "price": "¥40/月", "price_usd": 5.56, "quota": "18000次/月(1200/5h)", "source": "https://www.volcengine.com/article/2807327"}, {"estimated": true, "formula": "月4.1625亿÷$27.8(¥200按7.2)×10", "id": "volc-pro", "name": "火山方舟 Coding Pro", "per10": 149850000, "price": "¥200/月", "price_usd": 27.78, "quota": "90000次/月(6000/5h)", "source": "https://www.volcengine.com/article/2807327"}, {"estimated": true, "formula": "月3.75亿÷$27.5(¥198按7.2)×10", "id": "alibaba-standard", "name": "阿里百炼 标准版", "per10": 136363636, "price": "¥198/月", "price_usd": 27.5, "quota": "月约3.75亿tokens*", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"}, {"estimated": true, "formula": "$60 credits÷混合单价$0.57/1M", "id": "opencode-go", "name": "OpenCode Go", "per10": 105263158, "price": "$10/月", "price_usd": 10.0, "quota": "$60 credits按token单价扣", "source": "https://opencode.ai/docs/zh-cn/go/"}]
+{
+  "scenario": {
+    "label": "谷时 · 无缓存 · 假设混合比 1:3",
+    "baseline_mix": { "in_out": [1, 3], "source": null },
+    "mix_bounds": { "pessimistic": [0, 1], "optimistic": [1, 0] },
+    "cache_hit_rate": {
+      "value": 0,
+      "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "anchor": {
+      "model": "deepseek-flash",
+      "version": "DeepSeek-V4.1-Flash",
+      "price_cny_per_1m": {
+        "input_cache_miss": { "off_peak": 1.0, "peak": 2.0 },
+        "input_cache_hit": { "off_peak": 0.02, "peak": 0.04 },
+        "output": { "off_peak": 4.0, "peak": 8.0 }
+      },
+      "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "peak_multiplier": 2,
+    "fx": { "rate": 7.2, "as_of": "2026-10-03", "convention": "固定折算，不计汇率浮动" }
+  },
+  "plans": [
+    {
+      "id": "volc-lite",
+      "vendor": "火山方舟",
+      "name": "Coding Plan Lite",
+      "price": { "cny": 40, "text": "¥40/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 18000, "unit": "request", "window": "month", "sub_limit": "1200/5h", "shared": true },
+      "assumptions": {
+        "tokens_per_request": { "low": 1000, "base": 4625, "high": 20000, "source": null }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://ai.volcengine.com/activity/codingplan"] },
+      "note": "全模型共享额度"
+    },
+    {
+      "id": "volc-pro",
+      "vendor": "火山方舟",
+      "name": "Coding Plan Pro",
+      "price": { "cny": 200, "text": "¥200/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 90000, "unit": "request", "window": "month", "sub_limit": "6000/5h", "shared": true },
+      "assumptions": {
+        "tokens_per_request": { "low": 1000, "base": 4625, "high": 20000, "source": null }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://ai.volcengine.com/activity/codingplan"] },
+      "note": "全模型共享额度"
+    },
+    {
+      "id": "tc-max",
+      "vendor": "腾讯云 TokenHub",
+      "name": "Token Plan Max",
+      "price": { "usd": 103, "text": "$103/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 15900, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "credits_per_1m": { "base": 27, "peak": 55, "source": "https://www.tencentcloud.com/document/product/1300/81316" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.tencentcloud.com/document/product/1300/81316"] },
+      "note": "V4.1 Flash 原厂直供；官方综合单价的混合比口径未公开"
+    },
+    {
+      "id": "tc-pro",
+      "vendor": "腾讯云 TokenHub",
+      "name": "Token Plan Pro",
+      "price": { "usd": 51, "text": "$51/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 7900, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "credits_per_1m": { "base": 27, "peak": 55, "source": "https://www.tencentcloud.com/document/product/1300/81316" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.tencentcloud.com/document/product/1300/81316"] },
+      "note": "官方综合单价的混合比口径未公开"
+    },
+    {
+      "id": "tc-standard",
+      "vendor": "腾讯云 TokenHub",
+      "name": "Token Plan Standard",
+      "price": { "usd": 17, "text": "$17/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 2600, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "credits_per_1m": { "base": 27, "peak": 55, "source": "https://www.tencentcloud.com/document/product/1300/81316" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.tencentcloud.com/document/product/1300/81316"] },
+      "note": "官方综合单价的混合比口径未公开"
+    },
+    {
+      "id": "tc-lite",
+      "vendor": "腾讯云 TokenHub",
+      "name": "Token Plan Lite",
+      "price": { "usd": 7, "text": "$7/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 1000, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "credits_per_1m": { "base": 27, "peak": 55, "source": "https://www.tencentcloud.com/document/product/1300/81316" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.tencentcloud.com/document/product/1300/81316"] },
+      "note": "官方综合单价的混合比口径未公开"
+    },
+    {
+      "id": "opencode-go",
+      "vendor": "OpenCode",
+      "name": "Go",
+      "price": { "usd": 10, "text": "$10/月", "basis": "monthly", "promo_until": "2026-09-27" },
+      "quota": { "amount": 15, "unit": "usd_credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": {},
+      "verified": { "date": "2026-09-27", "sources": ["https://opencode.ai/docs/zh-cn/go/"] },
+      "note": "促销期 4x=$60 已于 2026-09-27 结束；本行按非促销额度 $15 计算"
+    },
+    {
+      "id": "ali-lite",
+      "vendor": "阿里云百炼",
+      "name": "Token Plan Lite",
+      "price": { "cny": 39, "text": "¥39/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 11500, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": { "credits_per_1m": null },
+      "verified": { "date": "2026-09-27", "sources": ["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"] },
+      "note": "22:00-08:00 五折；flash 档位抵扣系数官方未公开"
+    },
+    {
+      "id": "ali-essential",
+      "vendor": "阿里云百炼",
+      "name": "Token Plan Essential",
+      "price": { "cny": 79, "text": "¥79/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 25500, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": { "credits_per_1m": null },
+      "verified": { "date": "2026-09-27", "sources": ["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"] },
+      "note": "Credits 抵扣系数官方未公开"
+    },
+    {
+      "id": "ali-standard",
+      "vendor": "阿里云百炼",
+      "name": "Token Plan Standard",
+      "price": { "cny": 139, "text": "¥139/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 45000, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": { "credits_per_1m": null },
+      "verified": { "date": "2026-09-27", "sources": ["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"] },
+      "note": "Credits 抵扣系数官方未公开"
+    },
+    {
+      "id": "ali-pro",
+      "vendor": "阿里云百炼",
+      "name": "Token Plan Pro",
+      "price": { "cny": 499, "text": "¥499/月", "basis": "monthly", "promo_until": null },
+      "quota": { "amount": 180000, "unit": "credit", "window": "month", "sub_limit": null, "shared": false },
+      "assumptions": { "credits_per_1m": null },
+      "verified": { "date": "2026-09-27", "sources": ["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"] },
+      "note": "Credits 抵扣系数官方未公开"
+    },
+    {
+      "id": "atlas-starter",
+      "vendor": "Atlas Cloud",
+      "name": "Coding Plan Starter",
+      "price": { "usd": null, "text": "价格需登录", "basis": null, "promo_until": null },
+      "quota": { "amount": 16500000, "unit": "credit", "window": "week", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "tokens_per_credit": { "base": 0.55, "source": "https://www.atlascloud.ai/zh/coding-plan" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.atlascloud.ai/zh/coding-plan"] },
+      "note": "官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"
+    },
+    {
+      "id": "atlas-plus",
+      "vendor": "Atlas Cloud",
+      "name": "Coding Plan Plus",
+      "price": { "usd": null, "text": "价格需登录", "basis": null, "promo_until": null },
+      "quota": { "amount": 82500000, "unit": "credit", "window": "week", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "tokens_per_credit": { "base": 0.55, "source": "https://www.atlascloud.ai/zh/coding-plan" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.atlascloud.ai/zh/coding-plan"] },
+      "note": "官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"
+    },
+    {
+      "id": "atlas-ultra",
+      "vendor": "Atlas Cloud",
+      "name": "Coding Plan Ultra",
+      "price": { "usd": null, "text": "价格需登录", "basis": null, "promo_until": null },
+      "quota": { "amount": 330000000, "unit": "credit", "window": "week", "sub_limit": null, "shared": false },
+      "assumptions": {
+        "tokens_per_credit": { "base": 0.55, "source": "https://www.atlascloud.ai/zh/coding-plan" }
+      },
+      "verified": { "date": "2026-09-27", "sources": ["https://www.atlascloud.ai/zh/coding-plan"] },
+      "note": "官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"
+    }
+  ]
+}

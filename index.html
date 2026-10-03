@@ -3,36 +3,412 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>aiplanrank — $10 = 多少 Token</title>
+<title>aiplanrank — $10 能烧多少 deepseek-flash</title>
 <style>
-body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:960px;margin:24px auto;padding:0 16px;color:#222}
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1080px;margin:24px auto;padding:0 16px;color:#222}
 h1 small{color:#666;font-weight:normal}
-table{border-collapse:collapse;width:100%;font-size:15px}
-td,th{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+td,th{border:1px solid #ddd;padding:7px;text-align:left;vertical-align:top}
 th{background:#f5f5f5;white-space:nowrap}
 tr:nth-child(even) td{background:#fafafa}
 .num{font-weight:bold;white-space:nowrap}
-.badge{display:inline-block;font-size:12px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
+.wait{color:#999}
+.badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;background:#fff3cd;border:1px solid #e6c200;color:#664d03}
+.ok{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;background:#d4edda;border:1px solid #2d7a3f;color:#1d5c2a}
 .src{font-size:12px}
+.note{font-size:11px;color:#666}
+.scroll{overflow-x:auto}
+tr.baseline td{background:#eee;font-weight:600}
 footer{margin:24px 0;color:#666;font-size:13px}
+h2{font-size:17px;margin-top:28px}
 </style>
 </head>
 <body>
-<h1>aiplanrank <small>$10 = 多少 Token*</small></h1>
-<p>AI编程订阅理论量排行：统一折成每$10美元的tokens。<span class="badge">*估算</span> = 按次/按prompt口径经公开假设折算，非官方承诺。¥标价按7.2折$。</p>
-<table id="t"><tr><th>#</th><th>套餐</th><th>价格</th><th>月额度</th><th>$10 Token</th><th>公式</th><th>来源</th></tr></table>
-<footer>数据更新：2026-09-27 · 机器可读数据见 <a href="plans.json">plans.json</a>（与本页内联数据一致，见test_data.py） · 欢迎带来源链接PR修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
+<h1>aiplanrank <small>$10 能烧多少 deepseek-flash</small></h1>
+<p>锚定模型 <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/">deepseek-flash（DeepSeek-V4.1-Flash）</a>。<span id="scenario-line"></span>区间来自假设量级包围与物理边界，非实测，<b>名次按区间下界排</b>。谷时＝非工作日时段；峰时覆盖工作日 9:00–12:00 / 14:00–18:00。<span class="badge">N 个假设</span><span class="ok">官方直算</span></p>
+<div class="scroll">
+<table id="t"><tr><th>#</th><th>套餐</th><th>厂商</th><th>价格</th><th>额度</th><th>每 $10 flash（谷）</th><th>峰值（峰）</th><th>相对直充 API</th><th>假设与公式</th><th>来源</th></tr></table>
+</div>
+
+<h2>候选池（尚未核实到官方额度/系数，不进榜）</h2>
+<div class="scroll">
+<table>
+<tr><th>厂商</th><th>状态</th></tr>
+<tr><td>联通云 Coding Plan</td><td class="note">第三方汇总称含 DeepSeek-V4-Flash、Lite ¥40；官方额度页未核实</td></tr>
+<tr><td>京东云 Coding Plan</td><td class="note">模型池仅到 DeepSeek-V3.2（非 flash），本榜不计</td></tr>
+<tr><td>百度千帆 Token Plan</td><td class="note">Coding Plan 已停售并入 Token Plan，额度口径未见 flash 系数</td></tr>
+<tr><td>优云智算 / 商汤 / 移动云 / 天翼云 / 九章</td><td class="note">含 flash 与否、额度口径均未核实</td></tr>
+<tr><td>Atlas Cloud 加油包</td><td class="note">倍率公开（flash 0.73入/2.18出），套餐价需登录</td></tr>
+</table>
+</div>
+
+<footer>核验日期逐行标注于来源列 · 机器可读数据 <a href="plans.json">plans.json</a>（与页内内联数据一致，见 test_data.js） · 欢迎带官方来源的 PR 修正 · <a href="https://github.com/Finn763/aiplanrank">GitHub</a></footer>
 <script>
-// ponytail: data inlined so the page works on file:// with zero backend;
-// keep in sync with plans.json (test_data.py fails otherwise).
-const PLANS = [{"estimated": true, "formula": "月72亿÷$16.5(¥119按7.2)×10", "id": "minimax-max", "name": "MiniMax Max", "per10": 4356302521, "price": "¥119/月", "quota": "月约72亿tokens*", "source": "https://agent.minimaxi.com/docs/code/account/usage"}, {"estimated": true, "formula": "月24亿÷$6.8(¥49按7.2)×10", "id": "minimax-plus", "name": "MiniMax Plus", "per10": 3526530612, "price": "¥49/月", "quota": "月约24亿tokens*", "source": "https://agent.minimaxi.com/docs/code/account/usage"}, {"estimated": true, "formula": "月14.28亿÷$27.6(¥199按7.2)×10", "id": "kimi-allegretto", "name": "Kimi Allegretto", "per10": 516663317, "price": "¥199/月", "quota": "月约14.28亿tokens*", "source": "https://www.kimi.com/help/membership/membership-pricing"}, {"estimated": true, "formula": "月6亿÷$20.7(¥149按7.2)×10", "id": "glm-pro", "name": "智谱 GLM Coding Pro", "per10": 289932883, "price": "¥149/月", "quota": "月约6亿tokens*", "source": "https://docs.bigmodel.cn/cn/coding-plan/overview"}, {"estimated": true, "formula": "月4.8亿÷$20×10", "id": "chatgpt-plus", "name": "ChatGPT Plus / Codex", "per10": 240000000, "price": "$20/月", "quota": "月约4.8亿tokens*", "source": "https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan"}, {"estimated": true, "formula": "月2.9亿÷$13.75(¥99按7.2)×10", "id": "mimo-standard", "name": "小米 MiMo Standard", "per10": 210909089, "price": "¥99/月", "quota": "月约2.9亿tokens*", "source": "https://mimo.mi.com/docs/zh-CN/price/token-plan"}, {"estimated": true, "formula": "月4.16亿÷$20×10", "id": "claude-pro", "name": "Claude Pro", "per10": 208000001, "price": "$20/月", "quota": "月约4.16亿tokens*", "source": "https://claude.com/pricing"}, {"estimated": true, "formula": "月1.2亿÷$6.8(¥49按7.2)×10", "id": "glm-lite", "name": "智谱 GLM Coding Lite", "per10": 176326531, "price": "¥49/月", "quota": "月约1.2亿tokens*", "source": "https://docs.bigmodel.cn/cn/coding-plan/overview"}, {"estimated": true, "formula": "月8325万÷$5.6(¥40按7.2)×10", "id": "volc-lite", "name": "火山方舟 Coding Lite", "per10": 149850000, "price": "¥40/月", "quota": "18000次/月(1200/5h)", "source": "https://www.volcengine.com/article/2807327"}, {"estimated": true, "formula": "月4.1625亿÷$27.8(¥200按7.2)×10", "id": "volc-pro", "name": "火山方舟 Coding Pro", "per10": 149850000, "price": "¥200/月", "quota": "90000次/月(6000/5h)", "source": "https://www.volcengine.com/article/2807327"}, {"estimated": true, "formula": "月3.75亿÷$27.5(¥198按7.2)×10", "id": "alibaba-standard", "name": "阿里百炼 标准版", "per10": 136363636, "price": "¥198/月", "quota": "月约3.75亿tokens*", "source": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"}, {"estimated": true, "formula": "$60 credits÷混合单价$0.57/1M", "id": "opencode-go", "name": "OpenCode Go", "per10": 105263158, "price": "$10/月", "quota": "$60 credits按token单价扣", "source": "https://opencode.ai/docs/zh-cn/go/"}];
-function fmt(n){if(n>=1e8)return (n/1e8).toFixed(2)+'亿';if(n>=1e4)return Math.round(n/1e4)+'万';return ''+n;}
-PLANS.sort(function(a,b){return b.per10-a.per10;});
-var t=document.getElementById('t'),medal=['🥇','🥈','🥉'];
-PLANS.forEach(function(p,i){
-var tr=document.createElement('tr');
-tr.innerHTML='<td>'+(medal[i]||(i+1))+'</td><td>'+p.name+'</td><td>'+p.price+'</td><td><small>'+p.quota+'</small></td><td class="num">'+fmt(p.per10)+(p.estimated?'*':'')+'</td><td><small>'+p.formula+'</small></td><td class="src"><a href="'+p.source+'">官方</a></td>';
-t.appendChild(tr);});
+const SCENARIO = {"label":"谷时 · 无缓存 · 假设混合比 1:3","baseline_mix":{"in_out":[1,3],"source":null},"mix_bounds":{"pessimistic":[0,1],"optimistic":[1,0]},"cache_hit_rate":{"value":0,"source":"https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"},"anchor":{"model":"deepseek-flash","version":"DeepSeek-V4.1-Flash","price_cny_per_1m":{"input_cache_miss":{"off_peak":1,"peak":2},"input_cache_hit":{"off_peak":0.02,"peak":0.04},"output":{"off_peak":4,"peak":8}},"source":"https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"},"peak_multiplier":2,"fx":{"rate":7.2,"as_of":"2026-10-03","convention":"固定折算，不计汇率浮动"}};
+const PLANS = [{"id":"volc-lite","vendor":"火山方舟","name":"Coding Plan Lite","price":{"cny":40,"text":"¥40/月","basis":"monthly","promo_until":null},"quota":{"amount":18000,"unit":"request","window":"month","sub_limit":"1200/5h","shared":true},"assumptions":{"tokens_per_request":{"low":1000,"base":4625,"high":20000,"source":null}},"verified":{"date":"2026-09-27","sources":["https://ai.volcengine.com/activity/codingplan"]},"note":"全模型共享额度"},{"id":"volc-pro","vendor":"火山方舟","name":"Coding Plan Pro","price":{"cny":200,"text":"¥200/月","basis":"monthly","promo_until":null},"quota":{"amount":90000,"unit":"request","window":"month","sub_limit":"6000/5h","shared":true},"assumptions":{"tokens_per_request":{"low":1000,"base":4625,"high":20000,"source":null}},"verified":{"date":"2026-09-27","sources":["https://ai.volcengine.com/activity/codingplan"]},"note":"全模型共享额度"},{"id":"tc-max","vendor":"腾讯云 TokenHub","name":"Token Plan Max","price":{"usd":103,"text":"$103/月","basis":"monthly","promo_until":null},"quota":{"amount":15900,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":{"base":27,"peak":55,"source":"https://www.tencentcloud.com/document/product/1300/81316"}},"verified":{"date":"2026-09-27","sources":["https://www.tencentcloud.com/document/product/1300/81316"]},"note":"V4.1 Flash 原厂直供；官方综合单价的混合比口径未公开"},{"id":"tc-pro","vendor":"腾讯云 TokenHub","name":"Token Plan Pro","price":{"usd":51,"text":"$51/月","basis":"monthly","promo_until":null},"quota":{"amount":7900,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":{"base":27,"peak":55,"source":"https://www.tencentcloud.com/document/product/1300/81316"}},"verified":{"date":"2026-09-27","sources":["https://www.tencentcloud.com/document/product/1300/81316"]},"note":"官方综合单价的混合比口径未公开"},{"id":"tc-standard","vendor":"腾讯云 TokenHub","name":"Token Plan Standard","price":{"usd":17,"text":"$17/月","basis":"monthly","promo_until":null},"quota":{"amount":2600,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":{"base":27,"peak":55,"source":"https://www.tencentcloud.com/document/product/1300/81316"}},"verified":{"date":"2026-09-27","sources":["https://www.tencentcloud.com/document/product/1300/81316"]},"note":"官方综合单价的混合比口径未公开"},{"id":"tc-lite","vendor":"腾讯云 TokenHub","name":"Token Plan Lite","price":{"usd":7,"text":"$7/月","basis":"monthly","promo_until":null},"quota":{"amount":1000,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":{"base":27,"peak":55,"source":"https://www.tencentcloud.com/document/product/1300/81316"}},"verified":{"date":"2026-09-27","sources":["https://www.tencentcloud.com/document/product/1300/81316"]},"note":"官方综合单价的混合比口径未公开"},{"id":"opencode-go","vendor":"OpenCode","name":"Go","price":{"usd":10,"text":"$10/月","basis":"monthly","promo_until":"2026-09-27"},"quota":{"amount":15,"unit":"usd_credit","window":"month","sub_limit":null,"shared":false},"assumptions":{},"verified":{"date":"2026-09-27","sources":["https://opencode.ai/docs/zh-cn/go/"]},"note":"促销期 4x=$60 已于 2026-09-27 结束；本行按非促销额度 $15 计算"},{"id":"ali-lite","vendor":"阿里云百炼","name":"Token Plan Lite","price":{"cny":39,"text":"¥39/月","basis":"monthly","promo_until":null},"quota":{"amount":11500,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":null},"verified":{"date":"2026-09-27","sources":["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"]},"note":"22:00-08:00 五折；flash 档位抵扣系数官方未公开"},{"id":"ali-essential","vendor":"阿里云百炼","name":"Token Plan Essential","price":{"cny":79,"text":"¥79/月","basis":"monthly","promo_until":null},"quota":{"amount":25500,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":null},"verified":{"date":"2026-09-27","sources":["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"]},"note":"Credits 抵扣系数官方未公开"},{"id":"ali-standard","vendor":"阿里云百炼","name":"Token Plan Standard","price":{"cny":139,"text":"¥139/月","basis":"monthly","promo_until":null},"quota":{"amount":45000,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":null},"verified":{"date":"2026-09-27","sources":["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"]},"note":"Credits 抵扣系数官方未公开"},{"id":"ali-pro","vendor":"阿里云百炼","name":"Token Plan Pro","price":{"cny":499,"text":"¥499/月","basis":"monthly","promo_until":null},"quota":{"amount":180000,"unit":"credit","window":"month","sub_limit":null,"shared":false},"assumptions":{"credits_per_1m":null},"verified":{"date":"2026-09-27","sources":["https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"]},"note":"Credits 抵扣系数官方未公开"},{"id":"atlas-starter","vendor":"Atlas Cloud","name":"Coding Plan Starter","price":{"usd":null,"text":"价格需登录","basis":null,"promo_until":null},"quota":{"amount":16500000,"unit":"credit","window":"week","sub_limit":null,"shared":false},"assumptions":{"tokens_per_credit":{"base":0.55,"source":"https://www.atlascloud.ai/zh/coding-plan"}},"verified":{"date":"2026-09-27","sources":["https://www.atlascloud.ai/zh/coding-plan"]},"note":"官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"},{"id":"atlas-plus","vendor":"Atlas Cloud","name":"Coding Plan Plus","price":{"usd":null,"text":"价格需登录","basis":null,"promo_until":null},"quota":{"amount":82500000,"unit":"credit","window":"week","sub_limit":null,"shared":false},"assumptions":{"tokens_per_credit":{"base":0.55,"source":"https://www.atlascloud.ai/zh/coding-plan"}},"verified":{"date":"2026-09-27","sources":["https://www.atlascloud.ai/zh/coding-plan"]},"note":"官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"},{"id":"atlas-ultra","vendor":"Atlas Cloud","name":"Coding Plan Ultra","price":{"usd":null,"text":"价格需登录","basis":null,"promo_until":null},"quota":{"amount":330000000,"unit":"credit","window":"week","sub_limit":null,"shared":false},"assumptions":{"tokens_per_credit":{"base":0.55,"source":"https://www.atlascloud.ai/zh/coding-plan"}},"verified":{"date":"2026-09-27","sources":["https://www.atlascloud.ai/zh/coding-plan"]},"note":"官方倍率 flash 0.73入/2.18出；1积分≈0.55 flash tokens；套餐价 JS 渲染未取到"}];
+// ponytail: data inlined so file:// works with zero backend; test_data.js enforces sync with plans.json
+/* FORMULA:START */
+function fxRate(scenario){ return scenario.fx.rate; }
+
+// token 数是整数：统一取整，既有物理意义，也让并列名次与回归锚不受浮点尾差影响
+function r0(x){ return (x === null || x === undefined) ? null : Math.round(x); }
+
+function anchorAt(scenario, peak){
+  var a = scenario.anchor.price_cny_per_1m, k = peak ? 'peak' : 'off_peak';
+  return { input_miss: a.input_cache_miss[k], input_hit: a.input_cache_hit[k], output: a.output[k] };
+}
+
+function effInputCny(scenario){
+  var a = anchorAt(scenario, false), c = scenario.cache_hit_rate.value;
+  return (1 - c) * a.input_miss + c * a.input_hit;
+}
+
+function blendCny(scenario, mix){
+  var out = anchorAt(scenario, false).output;
+  return (mix[0] * effInputCny(scenario) + mix[1] * out) / (mix[0] + mix[1]);
+}
+
+function baselinePer10(scenario, mix){
+  return 10 / (blendCny(scenario, mix) / fxRate(scenario)) * 1e6;
+}
+
+function priceUsd(plan, scenario){
+  if (plan.price.usd !== null && plan.price.usd !== undefined) return plan.price.usd;
+  if (plan.price.cny !== null && plan.price.cny !== undefined) return plan.price.cny / fxRate(scenario);
+  return null;
+}
+
+function corners(scenario, plan){
+  var tpr = plan.assumptions.tokens_per_request || null;
+  var mixP = scenario.mix_bounds.pessimistic, mixO = scenario.mix_bounds.optimistic;
+  return [
+    { key: 'mix_p+tpr_p', mix: mixP, tpr: tpr ? tpr.low  : null },
+    { key: 'mix_o+tpr_o', mix: mixO, tpr: tpr ? tpr.high : null },
+    { key: 'mix_p+tpr_o', mix: mixP, tpr: tpr ? tpr.high : null },
+    { key: 'mix_o+tpr_p', mix: mixO, tpr: tpr ? tpr.low  : null }
+  ];
+}
+
+function planTokens(plan, scenario, corner){
+  var q = plan.quota;
+  if (q.unit === 'token') return q.amount;
+  if (q.unit === 'request') return corner.tpr === null ? null : q.amount * corner.tpr;
+  if (q.unit === 'credit'){
+    var a = plan.assumptions.credits_per_1m;
+    if (a){
+      if (a.tokens_per_credit !== undefined && a.tokens_per_credit !== null) return q.amount * a.tokens_per_credit;
+      if (a.base !== null && a.base !== undefined) return q.amount / a.base * 1e6;
+    }
+    var t = plan.assumptions.tokens_per_credit;
+    return t ? q.amount * t.base : null;
+  }
+  if (q.unit === 'usd_credit') return q.amount / (blendCny(scenario, corner.mix) / fxRate(scenario)) * 1e6;
+  return null;
+}
+
+function per10Of(plan, scenario, corner){
+  var usd = priceUsd(plan, scenario), t = planTokens(plan, scenario, corner);
+  return (usd === null || t === null) ? null : t / usd * 10;
+}
+
+function planTokensPeak(plan, scenario){
+  var q = plan.quota, a = plan.assumptions.credits_per_1m;
+  if (q.unit === 'credit'){
+    if (a && a.peak !== null && a.peak !== undefined) return q.amount / a.peak * 1e6;
+    var t = plan.assumptions.tokens_per_credit;
+    return t ? q.amount * t.base : null;
+  }
+  if (q.unit === 'usd_credit'){
+    var ap = anchorAt(scenario, true), c = scenario.cache_hit_rate.value, mix = scenario.baseline_mix.in_out;
+    var ei = (1 - c) * ap.input_miss + c * ap.input_hit;
+    var blend = (mix[0] * ei + mix[1] * ap.output) / (mix[0] + mix[1]);
+    return q.amount / (blend / fxRate(scenario)) * 1e6;
+  }
+  return null;
+}
+
+function per10Peak(plan, scenario){
+  var usd = priceUsd(plan, scenario), t = planTokensPeak(plan, scenario);
+  return (usd === null || t === null) ? null : t / usd * 10;
+}
+
+function status(plan, scenario){
+  if (priceUsd(plan, scenario) === null) return 'pending';
+  var u = plan.quota.unit, a = plan.assumptions;
+  if (u === 'request' && !a.tokens_per_request) return 'pending';
+  if (u === 'credit' && !a.credits_per_1m && !a.tokens_per_credit) return 'pending';
+  return 'ranked';
+}
+
+function pendingReason(plan, scenario){
+  if (status(plan, scenario) !== 'pending') return null;
+  if (priceUsd(plan, scenario) === null) return '缺 price.usd（价格需登录）';
+  if (plan.quota.unit === 'credit') return '缺 credits_per_1m 官方出处';
+  return '缺 tokens_per_request 出处';
+}
+
+// 积分类行的「token 产出」缺口只计一次：与 planTokens 的读取优先级一致（spec §5.4）
+function creditYieldUnsourced(plan){
+  var a = plan.assumptions, c = a.credits_per_1m;
+  if (c && c.base !== null && c.base !== undefined) return c.source === null;
+  var t = a.tokens_per_credit;
+  return !!(t && t.base !== null && t.base !== undefined && t.source === null);
+}
+
+function assumptionCount(plan, scenario){
+  if (status(plan, scenario) === 'pending') return null;
+  var n = 0, a = plan.assumptions;
+  if (a.tokens_per_request && a.tokens_per_request.source === null) n++;
+  if (creditYieldUnsourced(plan)) n++;
+  if (plan.quota.unit === 'usd_credit') n++;
+  return n;
+}
+
+function isEstimated(plan, scenario){
+  var n = assumptionCount(plan, scenario);
+  return n === null ? null : n > 0;
+}
+
+function rowStats(plan, scenario){
+  if (status(plan, scenario) === 'pending'){
+    return { id: plan.id, status: 'pending', reason: pendingReason(plan, scenario),
+             per10: { low: null, base: null, high: null },
+             multiple: { low: null, high: null }, count: null };
+  }
+  var list = corners(scenario, plan).map(function (c) {
+    var p10 = r0(per10Of(plan, scenario, c));
+    return { per10: p10, baseline: r0(baselinePer10(scenario, c.mix)) };
+  }).filter(function (r) { return r.per10 !== null; });
+  var lows = list.map(function (r) { return r.per10; });
+  var mults = list.map(function (r) { return r.per10 / r.baseline; });
+  var tpr = plan.assumptions.tokens_per_request;
+  var baseCorner = { mix: scenario.baseline_mix.in_out, tpr: tpr ? tpr.base : null };
+  return {
+    id: plan.id, status: 'ranked',
+    per10: { low: Math.min.apply(null, lows), base: r0(per10Of(plan, scenario, baseCorner)), high: Math.max.apply(null, lows) },
+    multiple: { low: Math.min.apply(null, mults), high: Math.max.apply(null, mults) },
+    count: assumptionCount(plan, scenario)
+  };
+}
+
+function rank(plans, scenario){
+  var rows = plans.map(function (p) { return rowStats(p, scenario); });
+  var ranked = rows.filter(function (r) { return r.status === 'ranked'; })
+    .sort(function (a, b) { return (b.per10.low - a.per10.low) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0); });
+  var firstAt = {}, seenIds = {};
+  ranked.forEach(function (r, i) {
+    var k = String(r.per10.low);
+    if (firstAt[k] === undefined) firstAt[k] = i + 1;
+  });
+  ranked.forEach(function (r) { r.rank = firstAt[String(r.per10.low)]; seenIds[r.id] = r.rank; });
+  var pending = rows.filter(function (r) { return r.status === 'pending'; })
+    .sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
+  return ranked.concat(pending);
+}
+
+function trimNum(n, d){
+  var s = n.toFixed(d === undefined ? 2 : d);
+  if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
+  return s;
+}
+
+function fmtTokens(n){
+  if (n === null || n === undefined) return '—';
+  if (n >= 1e8) return trimNum(n / 1e8) + '亿';
+  if (n >= 1e4) return Math.round(n / 1e4).toLocaleString('en-US') + '万';
+  return String(n);
+}
+
+function fmtMultiple(m){
+  return (m === null || m === undefined) ? '—' : trimNum(m, 3) + '×';
+}
+
+function fmtRange(lo, hi, f){
+  if (lo === null || lo === undefined) return '—';
+  return lo === hi ? f(lo) : f(lo) + ' – ' + f(hi);
+}
+
+function badgeText(count){
+  if (count === null || count === undefined) return '待查';
+  return count === 0 ? '官方直算' : count + ' 个假设';
+}
+
+// 价格折成美元文本：小于 $1 用 4 位小数（如锚价 $0.4514），否则 2 位去尾零
+function fmtUsd(n){
+  return '$' + trimNum(n, n < 1 ? 4 : 2);
+}
+
+// 可复算的公式串：先写该行 base 口径用到的原语，末段固定为价格步（÷ 单价 × 10）
+// 每个数都从 plan / scenario 现算，页面与测试跑的是同一份函数体（spec §6.1）
+function fmtFormula(plan, scenario){
+  if (status(plan, scenario) !== 'ranked') return null;
+  var usd = priceUsd(plan, scenario);
+  if (usd === null) return null;
+  var q = plan.quota, a = plan.assumptions, steps = [];
+  if (q.unit === 'token'){
+    steps.push(trimNum(q.amount, 0) + ' tokens');
+  } else if (q.unit === 'request'){
+    var t = a.tokens_per_request;
+    if (!t) return null;
+    steps.push(trimNum(q.amount, 0) + ' 次 × ' + trimNum(t.base, 0) + ' tokens/次');
+  } else if (q.unit === 'credit'){
+    var c = a.credits_per_1m, tc = a.tokens_per_credit;
+    if (c && c.tokens_per_credit !== null && c.tokens_per_credit !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 × ' + trimNum(c.tokens_per_credit, 4) + ' tokens/积分');
+    } else if (c && c.base !== null && c.base !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 ÷ ' + trimNum(c.base, 0) + ' 积分/1M × 10⁶');
+    } else if (tc && tc.base !== null && tc.base !== undefined){
+      steps.push(trimNum(q.amount, 0) + ' 积分 × ' + trimNum(tc.base, 4) + ' tokens/积分');
+    } else {
+      return null;
+    }
+  } else if (q.unit === 'usd_credit'){
+    steps.push('$' + trimNum(q.amount, 2) + ' 额度 ÷ 锚价 ' + fmtUsd(blendCny(scenario, scenario.baseline_mix.in_out) / fxRate(scenario)) + '/1M × 10⁶');
+  } else {
+    return null;
+  }
+  return steps.join(' ') + ' ÷ ' + fmtUsd(usd) + ' × 10';
+}
+
+// 请求数行的 tokens/请求 量级包围（所有请求数行的并集），供表头声明使用
+function tprBounds(plans){
+  var low = null, high = null;
+  (plans || []).forEach(function (p) {
+    var t = p.assumptions.tokens_per_request;
+    if (!t || p.quota.unit !== 'request') return;
+    if (low === null || t.low < low) low = t.low;
+    if (high === null || t.high > high) high = t.high;
+  });
+  return { low: low, high: high };
+}
+
+// 表头声明的默认场景句：每个数字都从 SCENARIO / PLANS 派生，不再手抄（spec §6.6）
+function fmtScenarioLine(scenario, plans){
+  var off = anchorAt(scenario, false), peak = anchorAt(scenario, true);
+  var mixP = scenario.mix_bounds.pessimistic, mixO = scenario.mix_bounds.optimistic;
+  var tb = tprBounds(plans);
+  var cny = function (n) { return '¥' + trimNum(n, 4); };
+  var tpr = tb.low === null ? '—' : trimNum(tb.low, 0) + ' ↔ ' + trimNum(tb.high, 0);
+  return '默认场景：<b>' + scenario.label + '</b>；锚价 ' + cny(off.input_miss) + '/1M 入（缓存未命中）· '
+       + cny(off.output) + '/1M 出（空闲时段；高峰 ×' + trimNum(scenario.peak_multiplier, 2) + ' → '
+       + cny(peak.input_miss) + ' / ' + cny(peak.output) + '）· fx ¥' + trimNum(scenario.fx.rate, 2) + ' = $1；'
+       + '区间 = 「入:出混合比 ' + mixP[0] + ':' + mixP[1] + ' ↔ ' + mixO[0] + ':' + mixO[1] + '」×'
+       + '「tokens/请求 ' + tpr + '」两轴的包络（物理边界 × 量级包围，非实测）。';
+}
+
+function isPromoExpired(plan, todayISO){
+  return !!(plan.price.promo_until && plan.price.promo_until < todayISO);
+}
+
+function isStale(plan, todayISO){
+  return (Date.parse(todayISO) - Date.parse(plan.verified.date)) / 86400000 > 90;
+}
+/* FORMULA:END */
+// 公式块只声明纯函数；这里把 Task 2 约定的导出对象组装出来，供本页渲染层引用。
+// test_data.js 用同样的名字在测试侧组装一份，所以页面与测试跑的是同一份函数体。
+var FORMULA = {
+  fxRate: fxRate, effInputCny: effInputCny, blendCny: blendCny, baselinePer10: baselinePer10,
+  priceUsd: priceUsd, corners: corners, planTokens: planTokens, per10Of: per10Of,
+  anchorAt: anchorAt, planTokensPeak: planTokensPeak, per10Peak: per10Peak,
+  status: status, pendingReason: pendingReason, assumptionCount: assumptionCount, isEstimated: isEstimated,
+  rowStats: rowStats, rank: rank, trimNum: trimNum, fmtTokens: fmtTokens, fmtMultiple: fmtMultiple,
+  fmtRange: fmtRange, fmtUsd: fmtUsd, fmtFormula: fmtFormula, fmtScenarioLine: fmtScenarioLine,
+  badgeText: badgeText, isPromoExpired: isPromoExpired, isStale: isStale
+};
+var TODAY = new Date().toISOString().slice(0, 10);
+var T = document.getElementById('t');
+
+// 表头声明的默认场景句由 SCENARIO 派生，免得与数据里的原语各说各话（spec §6.6）
+var scenarioEl = document.getElementById('scenario-line');
+if (scenarioEl) scenarioEl.innerHTML = FORMULA.fmtScenarioLine(SCENARIO, PLANS);
+
+function cell(html, cls){ return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + html + '</td>'; }
+function appendRow(cells, cls, title){
+  var tr = document.createElement('tr');
+  if (cls) tr.className = cls;
+  if (title) tr.title = title; // 保留意见也挂到整行，悬停即可读到（spec §5.4）
+  tr.innerHTML = cells.join('');
+  T.appendChild(tr);
+}
+function unitLabel(u){ return { token:'tokens', request:'次请求', credit:'积分', usd_credit:'美元额度' }[u]; }
+function priceCell(p){
+  var tag = p.basis === 'annual' ? ' <span class="badge">年付</span>'
+          : p.basis === 'promo'  ? ' <span class="badge">促销</span>' : '';
+  return p.text + tag;
+}
+function quotaCell(p){
+  return p.quota.amount.toLocaleString('en-US') + ' ' + unitLabel(p.quota.unit) + '/'
+       + (p.quota.window === 'month' ? '月' : '周')
+       + (p.quota.sub_limit ? '（' + p.quota.sub_limit + '）' : '')
+       + (p.quota.shared ? ' · 全模型共享' : '');
+}
+function sourceCell(p){
+  var stale = FORMULA.isStale(p, TODAY) ? ' <span class="badge">陈旧</span>' : '';
+  var promo = FORMULA.isPromoExpired(p, TODAY) ? ' <span class="badge">促销已结束</span>' : '';
+  return '<a href="' + p.verified.sources[0] + '">官方</a>'
+       + '<div class="note">核验于 ' + p.verified.date + stale + promo + '</div>';
+}
+function formulaCell(p, st){
+  var bits = [];
+  var t = p.assumptions.tokens_per_request;
+  if (t) bits.push('tokens/请求 ' + t.low + '/' + t.base + '/' + t.high + '（量级包围，非实测）');
+  var c = p.assumptions.credits_per_1m;
+  if (c && c.base !== null && c.base !== undefined) bits.push('官方 ' + c.base + ' 积分/1M（峰 ' + c.peak + '）');
+  var tc = p.assumptions.tokens_per_credit;
+  if (tc) bits.push('官方 ' + tc.base + ' token/积分');
+  if (p.quota.unit === 'usd_credit') bits.push('经锚价折算（蕴含读者混合比与缓存行为）');
+  var html = '<div class="note">' + bits.join('；') + '</div>';
+  // 可复算的公式串：原语 → token 产出 → 价格步（spec §6.1）
+  var f = FORMULA.fmtFormula(p, SCENARIO);
+  if (f) html += '<div class="note">' + f + '</div>';
+  var badgeCls = st.count === 0 ? 'ok' : 'badge';
+  html += '<span class="' + badgeCls + '">' + FORMULA.badgeText(st.count) + '</span>';
+  // 来源口径的保留意见（如腾讯「官方综合单价的混合比口径未公开」）不能是只维护、不显示的字段
+  if (p.note) html += '<div class="note">' + p.note + '</div>';
+  return html;
+}
+
+var baseTokens = FORMULA.baselinePer10(SCENARIO, SCENARIO.baseline_mix.in_out);
+appendRow([
+  cell('·'),
+  cell('<b>现金直充 DeepSeek API</b>'),
+  cell('基线'),
+  cell('$10'),
+  cell('无套餐额度，按量计费', 'note'),
+  cell('<span class="num">' + FORMULA.fmtTokens(baseTokens) + '</span>'),
+  cell('—', 'note'),
+  cell('<span class="num">1.00×</span>'),
+  cell('锚价 ¥1 入 / ¥4 出（缓存未命中，空闲）÷ fx ' + SCENARIO.fx.rate + '；随混合比在 ' +
+       FORMULA.fmtTokens(FORMULA.baselinePer10(SCENARIO, SCENARIO.mix_bounds.pessimistic)) + ' – ' +
+       FORMULA.fmtTokens(FORMULA.baselinePer10(SCENARIO, SCENARIO.mix_bounds.optimistic)) + ' 之间变化', 'note'),
+  cell('<a href="' + SCENARIO.anchor.source + '">官方</a><div class="note">锚价与峰谷</div>', 'src')
+], 'baseline');
+
+FORMULA.rank(PLANS, SCENARIO).forEach(function(r){
+  var p = PLANS.filter(function(x){ return x.id === r.id; })[0];
+  if (r.status === 'pending'){
+    appendRow([
+      cell('·'), cell(p.name), cell(p.vendor), cell(priceCell(p.price)), cell(quotaCell(p), 'note'),
+      cell('<span class="wait">待查</span>'), cell('—', 'note'), cell('<span class="wait">待查</span>'),
+      cell('<div class="note">' + r.reason + '</div>'), cell(sourceCell(p), 'src')
+    ]);
+    return;
+  }
+  var p10Base = r.per10.base === r.per10.low && r.per10.base === r.per10.high ? ''
+              : '<div class="note">基准 ' + FORMULA.fmtTokens(r.per10.base) + ' · 上限 ' + FORMULA.fmtTokens(r.per10.high) + '</div>';
+  appendRow([
+    cell(String(r.rank)),
+    cell(p.name),
+    cell(p.vendor),
+    cell(priceCell(p.price)),
+    cell(quotaCell(p), 'note'),
+    cell('<span class="num">' + FORMULA.fmtTokens(r.per10.low) + '</span>' + p10Base),
+    cell(FORMULA.fmtTokens(FORMULA.per10Peak(p, SCENARIO)), 'note'),
+    cell('<span class="num">' + FORMULA.fmtRange(r.multiple.low, r.multiple.high, FORMULA.fmtMultiple) + '</span>'),
+    cell(formulaCell(p, r)),
+    cell(sourceCell(p), 'src')
+  ], null, p.note);
+});
 </script>
 </body>
 </html>
